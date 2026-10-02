@@ -1,0 +1,12 @@
+{
+  "start_date": "1981-01-01",
+  "end_date": "2016-12-31",
+  "output_root": "..",
+  "seed": 42,
+  "outer_folds": 5,
+  "report_min_coverage_pct": 20.0,
+  "report_min_continuous_days": 365,
+  "dynamic_features": ["prec", "p_et", "tmin", "tmean", "tmax", "srad", "vprp"],
+  "target": "flow_obs",
+  "excluded_features": ["flow_sim", "hydrological_signatures"]
+}
