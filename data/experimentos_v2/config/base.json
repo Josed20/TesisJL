@@ -6,7 +6,7 @@
   "outer_folds": 5,
   "report_min_coverage_pct": 20.0,
   "report_min_continuous_days": 365,
-  "dynamic_features": ["prec", "p_et", "tmin", "tmean", "tmax", "srad", "vprp"],
+  "dynamic_features": ["prec", "pet", "tmin", "tmean", "tmax", "srad", "vprp"],
   "target": "flow_obs",
   "excluded_features": ["flow_sim", "hydrological_signatures"]
 }
