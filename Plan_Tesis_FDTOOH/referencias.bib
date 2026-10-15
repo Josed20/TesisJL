@@ -1,13 +1,16 @@
 % =====================================================================
 % Referencias del plan de tesis (biblatex + biber, estilo APA 7).
-% Antes de citar, verifica cada entrada contra el DOI o la fuente original.
 % En el texto: \textcite{clave} -> Autor (año); \parencite{clave} -> (Autor, año)
-% Para páginas web usa el tipo online con url y urldate.
+% Criterio: artículos de 2021 en adelante y revistas Q1 (SJR).
+% Excepciones: OMS (estadísticas oficiales); fuentes originales de los
+% modelos (TotalSegmentator, ConvNeXt V2, DINOv2); y el libro de
+% Hernández-Sampieri y Mendoza (2018) para el diseño metodológico.
+% Las entradas comunes con el paper se copiaron de Paper_FDTOOH/referencias.bib.
 % =====================================================================
 
 @article{wasserthal2023totalsegmentator,
   author  = {Wasserthal, Jakob and Breit, Hanns-Christian and Meyer, Manfred T. and Pradella, Maurice and Hinck, Daniel and Sauter, Alexander W. and Heye, Tobias and Boll, Daniel T. and Cyriac, Joshy and Yang, Shan and Bach, Michael and Segeroth, Martin},
-  title   = {{TotalSegmentator}: Robust segmentation of 104 anatomic structures in {CT} images},
+  title   = {{TotalSegmentator}: Robust Segmentation of 104 Anatomic Structures in {CT} Images},
   journal = {Radiology: Artificial Intelligence},
   volume  = {5},
   number  = {5},
@@ -18,24 +21,271 @@
 
 @inproceedings{woo2023convnextv2,
   author    = {Woo, Sanghyun and Debnath, Shoubhik and Hu, Ronghang and Chen, Xinlei and Liu, Zhuang and Kweon, In So and Xie, Saining},
-  title     = {{ConvNeXt V2}: Co-designing and scaling {ConvNets} with masked autoencoders},
+  title     = {{ConvNeXt V2}: Co-designing and Scaling {ConvNets} with Masked Autoencoders},
   booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
   pages     = {16133--16142},
-  year      = {2023}
+  year      = {2023},
+  doi       = {10.1109/CVPR52729.2023.01548}
 }
 
-@article{oquab2023dinov2,
-  author  = {Oquab, Maxime and Darcet, Timoth{\'e}e and Moutakanni, Th{\'e}o and Vo, Huy and Szafraniec, Marc and Khalidov, Vasil and Fernandez, Pierre and Haziza, Daniel and Massa, Francisco and El-Nouby, Alaaeldin and others},
-  title   = {{DINOv2}: Learning robust visual features without supervision},
-  journal = {Transactions on Machine Learning Research},
-  year    = {2024}
+@misc{oquab2023dinov2,
+  author       = {Oquab, Maxime and Darcet, Timoth{\'e}e and Moutakanni, Th{\'e}o and Vo, Huy and Szafraniec, Marc and Khalidov, Vasil and Fernandez, Pierre and Haziza, Daniel and Massa, Francisco and El-Nouby, Alaaeldin and others},
+  title        = {{DINOv2}: Learning Robust Visual Features without Supervision},
+  howpublished = {arXiv:2304.07193},
+  year         = {2023}
 }
 
-% Plantilla para fuentes web:
-% Ejemplo (tipo online): {minsa_salud_bucal,
-%   author  = {{Ministerio de Salud del Perú}},
-%   title   = {Título de la página},
-%   year    = {2025},
-%   url     = {https://www.gob.pe/...},
-%   urldate = {2026-10-14}
-% }
+@online{oms2025saludbucodental,
+  author  = {{Organización Mundial de la Salud}},
+  title   = {Salud bucodental},
+  year    = {2025},
+  month   = mar,
+  day     = {17},
+  url     = {https://www.who.int/news-room/fact-sheets/detail/oral-health},
+  urldate = {2026-10-14}
+}
+
+@article{liu2025fdtooth,
+  author  = {Liu, K. and Elbatel, M. and Chu, G. and Shan, Z. and Sum, F. H. K. M. H. and Hung, K. F. and Zhang, C. and Li, X. and Yang, Y.},
+  title   = {{FDTooth}: Intraoral photographs and {CBCT} images for fenestration and dehiscence detection},
+  journal = {Scientific Data},
+  volume  = {12},
+  pages   = {1007},
+  year    = {2025},
+  doi     = {10.1038/s41597-025-05348-3}
+}
+
+@article{sun2022dehiscence,
+  author  = {Sun, L. and Mu, C. and Chen, L. and Zhao, B. and Pan, J. and Liu, Y.},
+  title   = {Dehiscence and fenestration of Class {I} individuals with normality patterns in the anterior region: a {CBCT} study},
+  journal = {Clinical Oral Investigations},
+  volume  = {26},
+  number  = {5},
+  pages   = {4137--4145},
+  year    = {2022},
+  doi     = {10.1007/s00784-022-04384-2}
+}
+
+@article{gbd2026latinoamerica,
+  author  = {{GBD 2023 Latin America and Caribbean Oral Disorders Collaborators}},
+  title   = {The burden of oral disorders in {Latin America} and {Caribbean} countries from 1990 to 2023 and projections until 2050: a systematic analysis for the {Global Burden of Disease Study} 2023},
+  journal = {The Lancet Regional Health -- Americas},
+  volume  = {60},
+  pages   = {101517},
+  year    = {2026},
+  doi     = {10.1016/j.lana.2026.101517}
+}
+
+@article{zhang2026periodontitis,
+  author  = {Zhang, X. and Liu, Z. and Zhang, Y. and An, X.},
+  title   = {Artificial intelligence for detection of periodontitis on radiographic images: a systematic review and diagnostic test accuracy meta-analysis},
+  journal = {Journal of Dentistry},
+  pages   = {107054},
+  year    = {2026},
+  doi     = {10.1016/j.jdent.2026.107054}
+}
+
+@article{chen2026surveillance,
+  author  = {Chen, Z. and Liu, P. and Han, K. and Liao, P. and Yang, Y. and Wong, M. C. M. and Yiu, C. K. Y. and Lo, E. C. M.},
+  title   = {{AI} in oral health surveillance: critical review},
+  journal = {Journal of Dental Research},
+  volume  = {105},
+  number  = {7},
+  pages   = {840--852},
+  year    = {2026},
+  doi     = {10.1177/00220345261434568}
+}
+
+@article{xu2026swinunetr,
+  author  = {Xu, A. and Huang, H. and Zhang, B. and Dong, S. and Che, X.},
+  title   = {Using {Swin UNETR} deep model for automated detection of alveolar bone fenestration/dehiscence in {CBCT}},
+  journal = {Frontiers in Bioengineering and Biotechnology},
+  volume  = {14},
+  pages   = {1752350},
+  year    = {2026},
+  doi     = {10.3389/fbioe.2026.1752350}
+}
+
+@article{song2024radiomics,
+  author  = {Song, Y. and Ma, S. and Mao, B. and Xu, K. and Liu, Y. and Ma, J. and Jia, J.},
+  title   = {Application of machine learning in the preoperative radiomic diagnosis of ameloblastoma and odontogenic keratocyst based on cone-beam {CT}},
+  journal = {Dentomaxillofacial Radiology},
+  volume  = {53},
+  number  = {5},
+  pages   = {316--324},
+  year    = {2024},
+  doi     = {10.1093/dmfr/twae016}
+}
+
+@article{sha2025radiomics,
+  author  = {Sha, X. and Wang, C. and Sun, J. and Qi, S. and Yuan, X. and Zhang, H. and Yang, J.},
+  title   = {{CBCT} radiomics features combine machine learning to diagnose cystic lesions in the jaw},
+  journal = {Dentomaxillofacial Radiology},
+  volume  = {54},
+  number  = {5},
+  pages   = {381--388},
+  year    = {2025},
+  doi     = {10.1093/dmfr/twaf024}
+}
+
+@article{zhang2026radiomic,
+  author  = {Zhang, M. and Cai, J. and Cao, Q. and Chen, Z. and Maimaitiaili, S. and Yuan, S. and Yang, T. and Li, Z. and Zhang, Z. and Yang, Y. and others},
+  title   = {Radiomic features and carotid stenosis in periodontitis a two stage bootstrap and multimodal machine learning study},
+  journal = {Scientific Reports},
+  volume  = {16},
+  number  = {1},
+  pages   = {8177},
+  year    = {2026},
+  doi     = {10.1038/s41598-026-38463-1}
+}
+
+@article{rashid2026cielab,
+  author  = {Rashid, F. and Dudley, J.},
+  title   = {Classification of occlusal caries severity using spectrophotometric {CIELAB} measurements and machine learning algorithms},
+  journal = {Clinical Oral Investigations},
+  volume  = {30},
+  number  = {6},
+  pages   = {233},
+  year    = {2026},
+  doi     = {10.1007/s00784-026-06911-x}
+}
+
+@article{tichy2026periodontology,
+  author  = {Tichy, A. and Werner, N. and Dujic, H. and Wetzel, C. and Pitchika, V. and Bumm, C. V. and Folwaczny, M. and Schwendicke, F.},
+  title   = {Artificial Intelligence in Periodontology: A Systematic Review},
+  journal = {Journal of Periodontal Research},
+  volume  = {61},
+  number  = {6},
+  pages   = {639--661},
+  year    = {2026},
+  doi     = {10.1111/jre.70107}
+}
+
+@article{yang2026horizontal,
+  author  = {Yang, Y. and Jin, E. and Bian, Z. and Chen, Y. and Chen, X. and Wu, Y. and Tan, J.},
+  title   = {The application of deep learning in intelligent assessment of horizontal bone loss in mandibular first molars},
+  journal = {Clinical Oral Investigations},
+  volume  = {30},
+  number  = {10},
+  pages   = {470},
+  year    = {2026},
+  doi     = {10.1007/s00784-026-07180-4}
+}
+
+@article{palkovics2026segmentation,
+  author  = {Palkovics, D. and Molnar, B. and Pinter, C. and Garc{\'i}a-Mato, D. and Diaz-Pinto, A. and Tanacs, A. and Dobos, A. and Windisch, P. and Ramseier, C. A.},
+  title   = {Deep learning cone-beam computed tomography image segmentation for the {3D} visualization of mandibular infraosseous periodontal defects},
+  journal = {Journal of Periodontology},
+  volume  = {97},
+  number  = {9},
+  pages   = {1847--1859},
+  year    = {2026},
+  doi     = {10.1002/jper.70058}
+}
+
+@article{mao2025photographs,
+  author  = {Mao, K. and Thu, K. M. and Hung, K. F. and Yu, O. Y. and Hsung, R. T. and Lam, W. Y.},
+  title   = {Artificial Intelligence in Detecting Periodontal Disease From Intraoral Photographs: A Systematic Review},
+  journal = {International Dental Journal},
+  volume  = {75},
+  number  = {5},
+  pages   = {100883},
+  year    = {2025},
+  doi     = {10.1016/j.identj.2025.100883}
+}
+
+@article{li2026transverse,
+  author  = {Li, J. and Wang, R. and Yi, Z. and Ni, J. and Zuo, Z. and Wang, Y.},
+  title   = {Comparing Deep Learning Models for Identifying Maxillary Transverse Deficiency from Intraoral Photographs},
+  journal = {International Dental Journal},
+  volume  = {76},
+  number  = {4},
+  pages   = {109689},
+  year    = {2026},
+  doi     = {10.1016/j.identj.2026.109689}
+}
+
+@article{hu2025selfsupervised,
+  author  = {Hu, M. and Zhang, Q. and Wei, Z. and Jia, P. and Yuan, M. and Yu, H. and Yin, X. and Peng, J.},
+  title   = {Self-supervised learning enhances periapical films segmentation with limited labeled data},
+  journal = {Journal of Dentistry},
+  volume  = {163},
+  pages   = {106150},
+  year    = {2025},
+  doi     = {10.1016/j.jdent.2025.106150}
+}
+
+@article{li2025hcnet,
+  author  = {Li, Y. and Cui, Z. and Mei, L. and Xie, Y. and Marini, L. and Pelekos, G. and Gu, W. and Yu, X. and Wu, X. and Wei, X. and others},
+  title   = {A novel {AI}-powered radiographic analysis surpasses specialists in stage {II--IV} periodontitis detection: a multicenter diagnostic study},
+  journal = {npj Digital Medicine},
+  volume  = {8},
+  number  = {1},
+  pages   = {691},
+  year    = {2025},
+  doi     = {10.1038/s41746-025-02077-0}
+}
+
+@article{feng2026multimodal,
+  author  = {Feng, Y. and Jia, Y. and Lv, L. and Wei, X. and Hu, M.},
+  title   = {Progress of Multimodal Imaging: Bridging Orthodontics to Comprehensive Oral Multidisciplinary Care},
+  journal = {International Dental Journal},
+  volume  = {76},
+  number  = {3},
+  pages   = {109510},
+  year    = {2026},
+  doi     = {10.1016/j.identj.2026.109510}
+}
+
+@article{guo2026consenso,
+  author  = {Guo, R. and Li, X. and Hou, J. and Huang, Y. and Fang, B. and He, H. and Jin, Z. and Yan, F. and Wang, L. and Bai, Y. and Hu, W. and Chen, L. and Song, J. and Han, X. and Jin, F. and Wang, J. and Hu, M.},
+  title   = {Expert consensus on orthodontic-associated alveolar ridge augmentation for adult patients},
+  journal = {International Journal of Oral Science},
+  volume  = {18},
+  number  = {1},
+  pages   = {29},
+  year    = {2026},
+  doi     = {10.1038/s41368-026-00430-x}
+}
+
+@article{yuan2026integrating,
+  author  = {Yuan, Y. and Zhou, H. and Wang, B. and Li, C. and Gong, B. and Li, Z.},
+  title   = {Integrating {AI} into Dentistry: Technical Pathways and Clinical Applications in Oral Diseases-A Comprehensive Overview},
+  journal = {International Dental Journal},
+  volume  = {76},
+  number  = {2},
+  pages   = {109336},
+  year    = {2026},
+  doi     = {10.1016/j.identj.2025.109336}
+}
+
+@article{moor2023foundation,
+  author  = {Moor, M. and Banerjee, O. and Abad, Z. S. H. and Krumholz, H. M. and Leskovec, J. and Topol, E. J. and Rajpurkar, P.},
+  title   = {Foundation models for generalist medical artificial intelligence},
+  journal = {Nature},
+  volume  = {616},
+  number  = {7956},
+  pages   = {259--265},
+  year    = {2023},
+  doi     = {10.1038/s41586-023-05881-4}
+}
+
+@article{domic2026buccal,
+  author  = {Domic, D. and Rodrigues, D. M. and Couso-Queiruga, E. and Barboza, E. P. and Sanz, M. and Ulm, C. and Avila-Ortiz, G.},
+  title   = {Morphological patterns of buccal bone plate in the maxillary esthetic zone: A cross-sectional study},
+  journal = {Journal of Periodontology},
+  volume  = {97},
+  number  = {7},
+  pages   = {1503--1515},
+  year    = {2026},
+  doi     = {10.1002/jper.70071}
+}
+
+
+@book{hernandez2018metodologia,
+  author    = {Hernández-Sampieri, Roberto and Mendoza Torres, Christian Paulina},
+  title     = {Metodología de la investigación: Las rutas cuantitativa, cualitativa y mixta},
+  publisher = {McGraw-Hill Interamericana Editores},
+  location  = {Ciudad de México},
+  year      = {2018}
+}
