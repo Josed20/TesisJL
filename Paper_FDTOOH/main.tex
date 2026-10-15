@@ -294,7 +294,7 @@ modalidades para distinguir por diente entre normal, \prob{fenestración} y
 % M2 (azul) ajuste fino de ConvNeXt V2 Tiny; M3 (verde) DINOv2 ViT-B/14 + ML.
 La Fig.~\ref{fig:metodologia} resume la metodología propuesta.
 
-\begin{figure}[t]
+\begin{figure}[!htbp]
 \centering
 \includegraphics[width=\textwidth]{metodologia.png}
 \caption{Metodología.}
@@ -417,7 +417,7 @@ la \dat{CBCT} (0.789) y en la \dat{fusión} (0.796). El ensamble de M2 con
 \dat{fusión}, M2 con \dat{CBCT} y M1 con \dat{CBCT} alcanzó el mejor
 resultado global, con un \textit{Macro-F1} de 0.810.
 
-\begin{table}[t]
+\begin{table}[!htbp]
 \centering
 \caption{\textit{Macro-F1} del mejor modelo de cada metodología por
 modalidad (conjunto de desarrollo).}
@@ -448,7 +448,7 @@ individuales, M2 con \dat{fusión} (0.796) y M2 con \dat{CBCT} (0.789)
 superaron a \sol{Random Forest} con rasgos de la \dat{CBCT} (0.741),
 mientras que \sol{DINOv2} con \sol{regresión logística} no pasó de 0.621.
 
-\begin{table}[t]
+\begin{table}[!htbp]
 \centering
 \caption{Métricas de los modelos principales (conjunto de desarrollo). El
 AUC es el promedio macro uno contra el resto.}
@@ -486,7 +486,7 @@ una sensibilidad de 0.927, una especificidad de 0.774, una exactitud de
 0.858 y un AUC de 0.925, y entre los dientes patológicos distinguió la
 \prob{fenestración} de la \prob{dehiscencia} con una exactitud de 0.873.
 
-\begin{table}[t]
+\begin{table}[!htbp]
 \centering
 \caption{Matrices de confusión en el conjunto de desarrollo (filas: clase
 real; columnas: clase predicha).}
