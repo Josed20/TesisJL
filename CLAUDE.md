@@ -55,6 +55,14 @@ En el paper son cinco subsecciones (3.1 a 3.5). En el plan son cuatro fases: la 
 
 Detalles que vienen de la versión anterior de la figura y que el usuario confirmó que siguen vigentes (ya están en la Metodología del paper): integridad SHA256 de 487 archivos; exclusión de 24 pacientes (23 por discordancia CSV–JSON y 1 por coordenadas incompatibles); 2600 de 2604 dientes segmentados; desarrollo 174 pacientes / 2088 dientes y prueba 43 / 516; foto redimensionada a 768 px en el lado largo; HOG con PCA; entradas de M2 y M3: foto, CBCT 2.5D y fusión de dos ramas; protocolo de 5 folds externos agrupados por paciente con selección interna y predicciones OOF.
 
+## Resultados y figuras
+
+- Las cifras finales están en `resultados_tesis.md`, que se genera en el proyecto de código (`C:\Cursos\Ciclo IX\Computación Grafica\ProyectoComputaciónGrafica`, script `auditoria/figuras_tesis.py`). No las completes de memoria.
+- `figuras_tesis/figuras_extra.py` genera, sin entrenar nada, las figuras propias de los documentos: ejemplos N/F/D, flujo de cohorte, Fig. 1 v3 y matrices compactas.
+- Paper: unas 10–11 páginas. El usuario prefiere conservar completa la sección de Trabajos Relacionados original aunque aumenten las páginas; no la condenses. Usa la metodología, `macro_f1_metodologias.pdf` y `matrices_confusion_prueba.pdf`.
+- Plan: logo, `ejemplos_clases.pdf` (2.2.2.1), `flujo_cohorte.pdf` (3.2) y la metodología. No lleva figuras de resultados.
+- Decisión del usuario: no se entrena nada más. El antecedente (0.548) solo existe en desarrollo y no se dibuja en el panel de prueba.
+
 ## Material de referencia
 
 - `guias para avanzar paper/`: plantilla `Plantilla_SPRINGER_ESAN (2).docm` y guías de Introducción, Related Works y citas (resumidas en la guía de redacción).

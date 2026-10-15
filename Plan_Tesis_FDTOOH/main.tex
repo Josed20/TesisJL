@@ -8,7 +8,7 @@
 
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage[spanish,es-tabla,es-nodecimaldot]{babel}
+\usepackage[spanish,es-tabla,es-nodecimaldot,es-nosectiondot]{babel}
 \usepackage{amsmath}
 \usepackage{newtxtext,newtxmath}
 \usepackage[a4paper,margin=2.54cm]{geometry}
@@ -139,14 +139,22 @@ modelado, y evaluación. Se comparan tres metodologías: rasgos diseñados a
 mano con clasificadores de \sol{Machine Learning}, ajuste fino de
 \sol{ConvNeXt V2 Tiny} y representaciones del modelo fundacional
 \sol{DINOv2} con clasificadores de \sol{Machine Learning}, sobre una
-cohorte de 217 pacientes y 2604 dientes. En la validación cruzada
-preliminar del conjunto de desarrollo, ninguna metodología superó un
-\textit{Macro-F1} de 0.535 con solo la fotografía, mientras que un ensamble
-basado en el ajuste fino y en rasgos de la \dat{CBCT} alcanzó 0.810 y un
-AUC de 0.933. Estos resultados indican que la \dat{CBCT} es indispensable
-para distinguir ambos defectos y que el ajuste fino supera a los rasgos
-diseñados a mano y al modelo fundacional congelado. La evaluación final se
-realizará una sola vez en una prueba retenida de 43 pacientes.
+cohorte de 217 pacientes y 2604 dientes. Los modelos se eligen con
+validación cruzada agrupada por paciente y se evalúan una sola vez en una
+prueba retenida de 43 pacientes. En esta prueba, ninguna metodología
+superó un \textit{Macro-F1} de 0.551 con solo la fotografía, mientras que
+el ensamble basado en el ajuste fino y en rasgos de la \dat{CBCT} alcanzó
+0.842 (IC 95\,\%: 0.783--0.891), un AUC de 0.940 y una sensibilidad de
+0.979 para detectar dientes con algún defecto. Se concluye que la \dat{CBCT}
+es indispensable para distinguir ambos defectos, ya que la fotografía
+intraoral solo muestra signos indirectos en la encía y su fusión con la
+tomografía no mejora el desempeño. \con{Asimismo}, el ajuste fino de una
+red convolucional supera de forma significativa a los rasgos diseñados a
+mano y al modelo fundacional congelado, que no se adapta a las imágenes
+tomográficas sin un ajuste previo. Por su alta sensibilidad, el sistema
+puede servir como apoyo al odontólogo para priorizar la revisión de los
+dientes con sospecha de defecto, aunque debe validarse con datos de otras
+instituciones antes de su uso clínico.
 
 \noindent\textbf{Palabras clave:} \prob{fenestración}, \prob{dehiscencia},
 \dat{CBCT}, \dat{fotografía intraoral}, \sol{visión computacional},
@@ -532,7 +540,23 @@ la \prob{dehiscencia} es la pérdida del hueso que cubre la superficie de la
 raíz y suele afectar al margen óseo \parencite{liu2025fdtooth}. En esta
 investigación, el pre-diagnóstico es la clasificación automática de cada
 diente anterior como normal, con fenestración o con dehiscencia, que
-orienta pero no sustituye la evaluación del especialista.
+orienta pero no sustituye la evaluación del especialista. La
+Figura~\ref{fig:ejemplos} muestra un diente de cada clase en las dos
+modalidades: en la \dat{fotografía intraoral} solo se observan la encía y
+la corona, mientras que el corte vestíbulo-lingual de la \dat{CBCT} permite
+ver la cortical ósea que cubre la raíz.
+
+\begin{figure}[!htbp]
+\caption{Ejemplos de diente normal, con fenestración y con dehiscencia}
+\label{fig:ejemplos}
+\centering
+\includegraphics{ejemplos_clases.pdf}
+\fuente{Incisivos laterales inferiores del conjunto de desarrollo de
+\dat{FDTooth} \parencite{liu2025fdtooth}, clasificados correctamente con
+alta confianza. A la izquierda de cada par, el recorte de la fotografía
+intraoral; a la derecha, el corte de la tomografía CBCT (V: vestibular;
+L: lingual). Elaboración propia.}
+\end{figure}
 
 \paragraph{Factores}
 Los defectos óseos alveolares tienen una etiología multifactorial que
@@ -698,8 +722,25 @@ y el desempeño de los modelos se mide con métricas y con intervalos de
 confianza.
 
 \subsection{Población y Muestra}
-La Tabla~\ref{tab:poblacion} resume la población, la muestra y la unidad de
-análisis del estudio.
+\subsubsection{Población}
+La población está conformada por los 241 pacientes del dataset público
+\dat{FDTooth}, de 9 a 55 años, atendidos en dos centros de la Facultad de
+Odontología de la Universidad de Hong Kong entre 2010 y 2023. Cada
+paciente cuenta con una \dat{fotografía intraoral} frontal, una
+\dat{tomografía CBCT} y la etiqueta de sus 12 dientes anteriores como
+normal, con \prob{fenestración} o con \prob{dehiscencia}
+\parencite{liu2025fdtooth}.
+
+\subsubsection{Muestra}
+La muestra se obtiene mediante un muestreo no probabilístico por
+conveniencia \parencite{hernandez2018metodologia}, ya que se incluyen
+todos los pacientes que cumplen los criterios de calidad de los datos. Se
+excluyen 24 pacientes, 23 por discordancia entre las etiquetas del
+archivo CSV y del archivo JSON y uno por coordenadas de cajas
+incompatibles con la imagen, de modo que la muestra queda conformada por
+217 pacientes y 2604 dientes. La unidad de análisis es el diente
+anterior. La Tabla~\ref{tab:poblacion} resume la población, la muestra y
+la unidad de análisis del estudio.
 
 \begin{table}[!htbp]
 \caption{Población, muestra y unidad de análisis}
@@ -723,6 +764,19 @@ la fotografía intraoral y su región de interés de la tomografía CBCT. \\
 \end{tabularx}
 \fuente{Elaboración propia.}
 \end{table}
+
+La Figura~\ref{fig:cohorte} detalla la selección de la cohorte y su
+partición por paciente en un conjunto de desarrollo y una prueba retenida,
+de modo que los dientes de un mismo paciente nunca aparecen en ambos
+conjuntos.
+
+\begin{figure}[!htbp]
+\caption{Selección de la cohorte y partición por paciente}
+\label{fig:cohorte}
+\centering
+\includegraphics{flujo_cohorte.pdf}
+\fuente{N: normal; F: fenestración; D: dehiscencia. Elaboración propia.}
+\end{figure}
 
 \subsection{Operacionalización de Variables}
 La Tabla~\ref{tab:operacionalizacion} presenta la operacionalización de la
@@ -763,21 +817,21 @@ delimitadoras de los dientes en la fotografía. Las etiquetas provienen de
 la lectura de la CBCT por dos odontólogos experimentados, con una
 concordancia $\kappa > 0.9$ \parencite{liu2025fdtooth}. La
 Tabla~\ref{tab:clases} describe las clases y su distribución en el
-conjunto de desarrollo.
+conjunto de desarrollo y en la prueba retenida.
 
 \begin{table}[!htbp]
-\caption{Clases del estudio y distribución en el conjunto de desarrollo}
+\caption{Clases del estudio y distribución por conjunto}
 \label{tab:clases}
 \singlespacing\small
-\begin{tabularx}{\textwidth}{@{}lXr@{}}
+\begin{tabularx}{\textwidth}{@{}lXrr@{}}
 \toprule
-Clase & Descripción & Dientes \\
+Clase & Descripción & Desarrollo & Prueba \\
 \midrule
-N & Normal: hueso vestibular íntegro & 938 \\
-F & \prob{Fenestración}: raíz expuesta sin compromiso de la cresta & 663 \\
-D & \prob{Dehiscencia}: pérdida de hueso que compromete el margen óseo & 487 \\
+N & Normal: hueso vestibular íntegro & 938 & 226 \\
+F & \prob{Fenestración}: raíz expuesta sin compromiso de la cresta & 663 & 169 \\
+D & \prob{Dehiscencia}: pérdida de hueso que compromete el margen óseo & 487 & 121 \\
 \midrule
-Total & 174 pacientes del conjunto de desarrollo & 2088 \\
+Total & Dientes (pacientes: 174 y 43) & 2088 & 516 \\
 \bottomrule
 \end{tabularx}
 \fuente{Elaboración propia con base en \textcite{liu2025fdtooth}.}
@@ -834,27 +888,39 @@ En la M1, cada diente se representa con rasgos diseñados a mano: el
 histograma de gradientes orientados (\sol{HOG}) reducido con análisis de
 componentes principales, los patrones binarios locales uniformes
 (\sol{LBP}) y estadísticas de color \sol{LAB} del diente y la encía en la
-fotografía, y el perfil de \prob{grosor óseo vestibular} en la CBCT, del
-que se derivan la altura de la cresta ósea y las zonas sin hueso. Estos
-rasgos alimentan a \sol{SVM}, \sol{Random Forest}, \sol{Gradient
-Boosting} y \sol{KNN}. En la M2, se realiza el ajuste fino de
-\sol{ConvNeXt V2 Tiny} \parencite{woo2023convnextv2} con la fotografía,
-con una representación 2.5D de la CBCT y con la fusión de ambas en una
-arquitectura de dos ramas, usando aumento de datos y parada temprana.
-\con{Por otra parte}, en la M3 el modelo fundacional \sol{DINOv2
-ViT-B/14} \parencite{oquab2023dinov2} se usa como extractor congelado, y
-sus representaciones se clasifican con \sol{regresión logística} y
-\sol{SVM}. Finalmente, se evalúa un ensamble de los mejores modelos. La
-salida de todas las metodologías es la clase de cada diente: N, F o D.
-Esta fase responde al OE3.
+fotografía, y el perfil de \prob{grosor óseo vestibular} en la CBCT,
+medido con umbrales de 400, 700 y 1000 unidades Hounsfield, del que se
+derivan la altura de la cresta ósea, las zonas sin hueso y el grosor
+medio, junto con la longitud y el volumen del diente. Estos rasgos
+alimentan a \sol{SVM}, \sol{Random Forest}, \sol{HistGradientBoosting} y
+\sol{KNN}. En la M2, se realiza el ajuste fino de \sol{ConvNeXt V2 Tiny}
+\parencite{woo2023convnextv2}, preentrenada en ImageNet-22k, con la
+fotografía, con una representación 2.5D de la CBCT y con la fusión de
+ambas en una arquitectura de dos ramas. El entrenamiento usa una pérdida
+ponderada por clase, aumento de datos y aumento en inferencia (TTA), con
+la tasa de aprendizaje y el número de épocas elegidos en desarrollo, y en
+la prueba se promedian las probabilidades de tres semillas. \con{Por otra
+parte}, en la M3 el modelo fundacional \sol{DINOv2 ViT-B/14}
+\parencite{oquab2023dinov2} se usa como extractor congelado, y sus
+representaciones se reducen por análisis de componentes principales y se
+clasifican con \sol{regresión logística} y \sol{SVM}. Finalmente, se
+evalúan quince variantes de ensamble de los mejores modelos (promedio de
+probabilidades, \textit{stacking}, contexto del paciente y umbrales) y se
+elige la de mejor \textit{Macro-F1} en desarrollo. La salida de todas las
+metodologías es la clase de cada diente: N, F o D. Esta fase responde al
+OE3.
 
 \paragraph{Fase 4: Evaluación}
 En el conjunto de desarrollo se aplica una validación cruzada de cinco
 particiones externas agrupadas por paciente, con una validación interna
 para seleccionar los hiperparámetros y predicciones fuera de partición
-para comparar las configuraciones. La mejor configuración de cada
-metodología se reentrena con todo el conjunto de desarrollo y se evalúa
-una sola vez en la prueba retenida. Esta fase responde al OE4.
+para comparar las configuraciones. Como referencia, en las mismas
+particiones se replica el enfoque del antecedente basado solo en
+fotografías \parencite{liu2025fdtooth} con redes convolucionales
+(MobileNetV3-Small, DenseNet121, ResNet50 y EfficientNet-B0) y con HOG
+más SVM o Random Forest. La mejor configuración de cada metodología se
+reentrena con todo el conjunto de desarrollo y se evalúa una sola vez en
+la prueba retenida. Esta fase responde al OE4.
 
 \subsubsection{Metodología para la medición de resultados}
 El análisis de los resultados de la implementación se realiza mediante la
@@ -863,7 +929,7 @@ evaluación de las métricas definidas en las Ecuaciones \ref{eq:prec} a
 principal es el \textit{Macro-F1}, porque pondera por igual las tres
 clases y no premia a un modelo que solo acierta la clase mayoritaria. Los
 intervalos de confianza del 95\,\% y las diferencias entre modelos se
-estiman mediante \textit{bootstrap} de pacientes con 1000 a 2000
+estiman mediante \textit{bootstrap} pareado de pacientes con 2000
 remuestreos, y una diferencia se considera significativa cuando su
 intervalo no incluye el cero. Con estos criterios se contrastan las
 hipótesis: la HE3 compara el \textit{Macro-F1} de las tres metodologías y
