@@ -22,7 +22,7 @@ Al redactar, marca siempre los términos con estas macros, definidas en el preá
 | `\dat{}` | dataset y modalidades de datos (FDTooth, CBCT, fotografía intraoral) | verde |
 | `\con{}` | conectores de adición (Del mismo modo, Asimismo, Por otra parte, De igual manera) | resaltado amarillo |
 
-Para la versión final se cambia `\colorestrue` por `\coloresfalse` en el preámbulo. Así se quitan los colores y el recuadro de leyenda «Borrador» sin tocar el texto. **Título definitivo** (patrón de `PREDICTIVO_TEMAS_v1.pdf`): «Diseño de un Sistema de \sol{Visión Computacional} para el Pre-diagnóstico de \prob{Fenestración y Dehiscencia Ósea Alveolar} a partir de \dat{Fotografías Intraorales y Tomografías CBCT}». El paper usa el mismo título. Problemas, objetivos e hipótesis deben usar estos mismos términos.
+Para la versión final se cambia `\colorestrue` por `\coloresfalse` en el preámbulo. Así se quitan los colores sin tocar el texto. El recuadro de leyenda «Borrador» ya se eliminó de ambos documentos a pedido del usuario; no lo vuelvas a añadir. **Título definitivo** (patrón de `PREDICTIVO_TEMAS_v1.pdf`): «Diseño de un Sistema de \sol{Visión Computacional} para el Pre-diagnóstico de \prob{Fenestración y Dehiscencia Ósea Alveolar} a partir de \dat{Fotografías Intraorales y Tomografías CBCT}». El paper usa el mismo título. Problemas, objetivos e hipótesis deben usar estos mismos términos.
 
 ## Compilar
 
@@ -60,6 +60,7 @@ Detalles que vienen de la versión anterior de la figura y que el usuario confir
 - Las cifras finales están en `resultados_tesis.md`, que se genera en el proyecto de código (`C:\Cursos\Ciclo IX\Computación Grafica\ProyectoComputaciónGrafica`, script `auditoria/figuras_tesis.py`). No las completes de memoria.
 - `figuras_tesis/figuras_extra.py` genera, sin entrenar nada, las figuras propias de los documentos: ejemplos N/F/D, flujo de cohorte, Fig. 1 v3 y matrices compactas.
 - Paper: unas 10–11 páginas. El usuario prefiere conservar completa la sección de Trabajos Relacionados original aunque aumenten las páginas; no la condenses. Usa la metodología, `macro_f1_metodologias.pdf` y `matrices_confusion_prueba.pdf`.
+- En el plan, debajo de cada figura y tabla va «Fuente: …» (macro `\fuente{}`), como en la mayoría de las tesis de ESAN, no «Nota.» de APA. La fuente indica solo el origen; las explicaciones van en el texto.
 - Plan: logo, `ejemplos_clases.pdf` (2.2.2.1), `flujo_cohorte.pdf` (3.2) y la metodología. No lleva figuras de resultados.
 - Decisión del usuario: no se entrena nada más. El antecedente (0.548) solo existe en desarrollo y no se dibuja en el panel de prueba.
 

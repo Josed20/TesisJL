@@ -66,7 +66,7 @@
 % siguiente; nota debajo.
 \captionsetup[table]{labelsep=newline,textfont=it,justification=raggedright,singlelinecheck=false}
 \captionsetup[figure]{labelsep=newline,textfont=it,justification=raggedright,singlelinecheck=false}
-\newcommand{\fuente}[1]{\par\vspace{2pt}{\footnotesize\textit{Nota.} #1\par}}
+\newcommand{\fuente}[1]{\par\vspace{2pt}{\footnotesize Fuente: #1\par}}
 
 \begin{document}
 
@@ -129,32 +129,28 @@ exposición radicular y, en casos severos, pérdida del diente. Su
 diagnóstico depende de la \dat{tomografía computarizada de haz cónico
 (CBCT)}, cuyo uso rutinario está limitado por la radiación y el tiempo que
 demanda, mientras que la inspección visual de las \dat{fotografías
-intraorales} es subjetiva. El objetivo de la presente investigación es
-diseñar un sistema de \sol{visión computacional} para el pre-diagnóstico
-por diente de \prob{fenestración y dehiscencia ósea alveolar} a partir de
-\dat{fotografías intraorales y tomografías CBCT}. La metodología se
-organiza en cuatro fases: control de calidad del dataset \dat{FDTooth},
-preprocesamiento de ambas modalidades, extracción de características y
-modelado, y evaluación. Se comparan tres metodologías: rasgos diseñados a
-mano con clasificadores de \sol{Machine Learning}, ajuste fino de
-\sol{ConvNeXt V2 Tiny} y representaciones del modelo fundacional
-\sol{DINOv2} con clasificadores de \sol{Machine Learning}, sobre una
-cohorte de 217 pacientes y 2604 dientes. Los modelos se eligen con
-validación cruzada agrupada por paciente y se evalúan una sola vez en una
-prueba retenida de 43 pacientes. En esta prueba, ninguna metodología
-superó un \textit{Macro-F1} de 0.551 con solo la fotografía, mientras que
-el ensamble basado en el ajuste fino y en rasgos de la \dat{CBCT} alcanzó
-0.842 (IC 95\,\%: 0.783--0.891), un AUC de 0.940 y una sensibilidad de
-0.979 para detectar dientes con algún defecto. Se concluye que la \dat{CBCT}
-es indispensable para distinguir ambos defectos, ya que la fotografía
-intraoral solo muestra signos indirectos en la encía y su fusión con la
-tomografía no mejora el desempeño. \con{Asimismo}, el ajuste fino de una
-red convolucional supera de forma significativa a los rasgos diseñados a
-mano y al modelo fundacional congelado, que no se adapta a las imágenes
-tomográficas sin un ajuste previo. Por su alta sensibilidad, el sistema
-puede servir como apoyo al odontólogo para priorizar la revisión de los
-dientes con sospecha de defecto, aunque debe validarse con datos de otras
-instituciones antes de su uso clínico.
+intraorales} es subjetiva. Por ello, esta investigación busca diseñar un
+sistema de \sol{visión computacional} para el pre-diagnóstico por diente
+de \prob{fenestración y dehiscencia ósea alveolar} a partir de
+\dat{fotografías intraorales y tomografías CBCT}. El trabajo sigue cuatro
+fases (control de calidad del dataset \dat{FDTooth}, preprocesamiento de
+ambas modalidades, extracción de características y modelado, y
+evaluación) y enfrenta tres formas de representar cada diente: rasgos
+diseñados a mano con clasificadores de \sol{Machine Learning}, ajuste fino
+de \sol{ConvNeXt V2 Tiny} y el modelo fundacional \sol{DINOv2} congelado.
+Con 217 pacientes y 2604 dientes, los modelos se eligieron por validación
+cruzada agrupada por paciente y se midieron una única vez sobre 43
+pacientes reservados. Usando solo la fotografía, ningún modelo pasó de
+0.551 de \textit{Macro-F1}; con la \dat{CBCT}, el ensamble del ajuste fino
+y de los rasgos tomográficos llegó a 0.842 (IC 95\,\%: 0.783--0.891), con
+un AUC de 0.940 y una sensibilidad de 0.979 para los dientes con algún
+defecto. La \dat{CBCT} resulta, entonces, imprescindible: la fotografía
+apenas deja ver signos indirectos en la encía y combinarla con la
+tomografía no aporta. El ajuste fino, por su parte, rinde por encima de
+los rasgos diseñados y de un modelo fundacional que no se adaptó a las
+imágenes tomográficas. Gracias a su sensibilidad, el sistema podría
+ayudar al odontólogo a decidir qué dientes revisar primero, aunque antes
+de llevarlo a la clínica habrá que probarlo con datos de otros centros.
 
 \noindent\textbf{Palabras clave:} \prob{fenestración}, \prob{dehiscencia},
 \dat{CBCT}, \dat{fotografía intraoral}, \sol{visión computacional},
@@ -169,25 +165,18 @@ instituciones antes de su uso clínico.
 \sol{Deep Learning}, \sol{Machine Learning}.
 \clearpage
 
-\ifcolores
-\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\small
-\textbf{Borrador.} \prob{Problema} \quad \sol{Solución} \quad
-\dat{Dataset} \quad \con{Del mismo modo, Asimismo, Por otra parte}}}
-\fi
-
 % ======================= CUERPO =====================================
 \pagenumbering{arabic}
 
 \seccionsinnumero{Introducción}
-La salud bucal es parte de la salud general, y las enfermedades que
-afectan al soporte de los dientes terminan, en sus etapas avanzadas, en la
-pérdida de piezas dentarias \parencite{oms2025saludbucodental}. Entre
-estas alteraciones se encuentran la \prob{fenestración} y la
-\prob{dehiscencia ósea alveolar}, dos defectos del hueso que cubre la raíz
-de los dientes. Estos defectos suelen pasar inadvertidos en el examen
-clínico y se descubren cuando ya condicionan un tratamiento, por ejemplo
-al planificar el movimiento de los dientes en ortodoncia
-\parencite{guo2026consenso}.
+Perder un diente suele ser el final de un proceso largo en el que el
+hueso que lo sostiene se va deteriorando sin dar síntomas
+\parencite{oms2025saludbucodental}. Dos de esos deterioros, la
+\prob{fenestración} y la \prob{dehiscencia ósea alveolar}, afectan
+precisamente la delgada lámina de hueso que recubre la raíz. Rara vez se
+notan en la consulta: lo habitual es descubrirlos cuando ya obligan a
+cambiar un plan de tratamiento, por ejemplo antes de mover los dientes en
+ortodoncia \parencite{guo2026consenso}.
 
 El diagnóstico de ambos defectos se apoya en la \dat{tomografía
 computarizada de haz cónico (CBCT)}, que muestra el hueso alveolar en tres
@@ -197,93 +186,86 @@ que sí se toma de rutina, solo muestra signos indirectos como la recesión
 de la encía \parencite{liu2025fdtooth}. Por ello, el odontólogo suele
 decidir con información incompleta cuándo solicitar una tomografía.
 
-En los últimos años, la \sol{inteligencia artificial} y en particular la
-\sol{visión computacional} se han incorporado al diagnóstico odontológico,
-con modelos que analizan radiografías, tomografías y fotografías clínicas
-\parencite{yuan2026integrating}. La publicación del dataset \dat{FDTooth},
-que reúne por primera vez fotografías intraorales y tomografías CBCT de
-los mismos pacientes con etiquetas por diente \parencite{liu2025fdtooth},
-hace posible estudiar de forma conjunta ambas modalidades.
+La odontología ya usa modelos de \sol{visión computacional} para leer
+radiografías, tomografías y fotografías clínicas
+\parencite{yuan2026integrating}. Lo que faltaba para este problema era un
+conjunto de datos que uniera ambas fuentes, y eso cambió con
+\dat{FDTooth}: por primera vez se publicaron fotografías intraorales y
+tomografías CBCT de los mismos pacientes, con la etiqueta de cada diente
+\parencite{liu2025fdtooth}.
 
-En este contexto, la presente investigación propone el diseño de un
-sistema de \sol{visión computacional} para el pre-diagnóstico de
-\prob{fenestración y dehiscencia ósea alveolar} a partir de
-\dat{fotografías intraorales y tomografías CBCT}. El sistema compara tres
-metodologías: rasgos diseñados a mano con clasificadores de \sol{Machine
-Learning}, ajuste fino de una red convolucional y representaciones de un
-modelo fundacional, y clasifica cada diente anterior como normal, con
-fenestración o con dehiscencia.
+Aprovechando ese dataset, aquí se plantea el diseño de un sistema de
+\sol{visión computacional} para el pre-diagnóstico de \prob{fenestración y
+dehiscencia ósea alveolar} a partir de \dat{fotografías intraorales y
+tomografías CBCT}. El sistema asigna a cada diente anterior una de tres
+clases (normal, fenestración o dehiscencia) y pone a prueba tres caminos
+para lograrlo: rasgos medidos a mano con clasificadores de \sol{Machine
+Learning}, una red convolucional ajustada al problema y un modelo
+fundacional usado tal como viene.
 
-El documento se organiza en tres capítulos. El Capítulo I presenta el
-planteamiento del problema, los objetivos, la justificación y la
-delimitación del estudio. El Capítulo II desarrolla el marco teórico, que
-incluye los antecedentes, las bases teóricas de ambas variables, el marco
-conceptual y las hipótesis. Por último, el Capítulo III describe la
-metodología: el diseño de la investigación, la población y la muestra, la
-operacionalización de variables, la recolección de datos y las fases de
-implementación del sistema.
+El Capítulo I expone el problema, los objetivos, la justificación y los
+límites del estudio. En el Capítulo II se revisan los trabajos previos y
+los conceptos que sustentan ambas variables, y se plantean las hipótesis.
+El Capítulo III explica cómo se llevará a cabo el estudio, desde la
+muestra y las variables hasta cada fase del sistema.
 
 % ---------------------------------------------------------------------
 \section{Planteamiento del Problema}
-En el presente capítulo se describe la realidad problemática, se formulan
-el problema general y los problemas específicos, se plantean los
-objetivos y se presentan la justificación y la delimitación del estudio.
+Este capítulo parte de la magnitud del problema y de las limitaciones del
+diagnóstico actual, y de ahí deriva las preguntas, los objetivos, las
+razones del estudio y su alcance.
 
 \subsection{Descripción de la Realidad Problemática}
-La Organización Mundial de la Salud estima que cerca de 3700 millones de
-personas padecen enfermedades bucodentales y que la periodontopatía grave
-supera los 1000 millones de casos en el mundo; \con{asimismo}, la pérdida
-total de dientes afecta a cerca del 7\,\% de las personas de 20 años o más
-y al 23\,\% de las de 60 años o más \parencite{oms2025saludbucodental}.
-Dentro de este panorama, la \prob{fenestración} es un defecto localizado
-del hueso alveolar que expone la raíz sin comprometer la cresta, mientras
-que la \prob{dehiscencia} es la pérdida del hueso que cubre la raíz y
-afecta al margen óseo. Ambas se asocian con exposición radicular, necrosis
-pulpar, recesión gingival, bolsas periodontales profundas y, en casos
-severos, pérdida del diente \parencite{liu2025fdtooth}.
+Según la Organización Mundial de la Salud, unos 3700 millones de personas
+tienen alguna enfermedad bucodental y los casos de periodontopatía grave
+pasan de 1000 millones; a ello se suma que el 7\,\% de los mayores de 20
+años y el 23\,\% de los mayores de 60 ya perdieron todos sus dientes
+\parencite{oms2025saludbucodental}. Parte de ese deterioro empieza en el
+hueso alveolar. En la \prob{fenestración}, el hueso se abre en una
+ventana y deja ver la raíz, aunque la cresta sigue intacta; en la
+\prob{dehiscencia}, el hueso falta desde el borde y la raíz queda
+descubierta hacia arriba. Ambos defectos pueden derivar en exposición
+radicular, necrosis pulpar, recesión de la encía, bolsas periodontales
+profundas y, en el peor de los casos, la pérdida del diente
+\parencite{liu2025fdtooth}.
 
-Estos defectos son frecuentes incluso en personas sin maloclusiones
-severas. \textcite{sun2022dehiscence} analizaron mediante \dat{CBCT} 732
-dientes anteriores de 61 individuos Clase I y encontraron dehiscencia en
-el 27.46\,\% y fenestración en el 26.91\,\% de los dientes, con al menos un
-defecto en el 48.91\,\% de ellos y en la totalidad de los pacientes.
-\con{Del mismo modo}, un consenso de expertos señala que estos defectos
-son comunes en los adultos que buscan tratamiento ortodóntico y que pueden
-agravarse durante el movimiento de los dientes \parencite{guo2026consenso}.
+No se trata de hallazgos raros. Al revisar con \dat{CBCT} 732 dientes
+anteriores de 61 personas con oclusión Clase I,
+\textcite{sun2022dehiscence} hallaron dehiscencia en el 27.46\,\% y
+fenestración en el 26.91\,\%; casi la mitad de los dientes (48.91\,\%)
+tenía al menos uno de los dos defectos y ningún paciente estaba libre de
+ellos. Un consenso de expertos advierte, \con{además}, que son comunes en
+los adultos que llegan a ortodoncia y que el movimiento de los dientes
+puede empeorarlos \parencite{guo2026consenso}.
 
-En América Latina y el Caribe, el Estudio de la Carga Global de la
-Enfermedad 2023 estimó 308.2 millones de casos prevalentes de trastornos
-bucales, que ocupan el primer lugar en prevalencia entre todas las causas
-de enfermedad de la región. Dentro de ellos, la periodontitis severa fue
-el segundo trastorno más prevalente, con 87.2 millones de casos, y su
-discapacidad aumentó en 25\,\% o más desde 1990 en la mayoría de los
-países \parencite{gbd2026latinoamerica}. En el Perú, el mismo estudio ubica
-al país con la segunda tasa más alta de años vividos con discapacidad por
-edentulismo en adultos de 60 años o más de la región, con 1366.9 por cada
-100\,000 habitantes, solo por debajo de Bolivia
-\parencite{gbd2026latinoamerica}. Además, la evidencia epidemiológica
-bucal de la región se concentra en Brasil, México, Chile y Colombia, y los
-estudios peruanos sobre estos defectos son escasos.
+La situación regional no es mejor. En América Latina y el Caribe, los
+trastornos bucales sumaron 308.2 millones de casos en 2023 y fueron el
+grupo de enfermedades más frecuente; la periodontitis severa ocupó el
+segundo lugar, con 87.2 millones, y la discapacidad que causa creció 25\,\%
+o más desde 1990 en casi todos los países \parencite{gbd2026latinoamerica}.
+El Perú aparece con la segunda tasa más alta de la región de años vividos
+con discapacidad por edentulismo en mayores de 60 años, 1366.9 por cada
+100\,000 habitantes, detrás solo de Bolivia
+\parencite{gbd2026latinoamerica}. Aun así, los estudios peruanos sobre
+estos defectos son escasos, y la evidencia regional proviene sobre todo de
+Brasil, México, Chile y Colombia.
 
-El problema se agrava porque el diagnóstico depende de un examen que no
-puede repetirse en cada control. La \dat{CBCT} es la modalidad de imagen
-de elección para diagnosticar estos defectos, pero su uso rutinario es
-poco práctico por la exposición a radiación y el tiempo que demanda; por
-otra parte, las radiografías bidimensionales no muestran con suficiente
-detalle el hueso vestibular, y la inspección visual de las
-\dat{fotografías intraorales} es subjetiva, lenta y puede ser poco precisa
-\parencite{liu2025fdtooth}. El único modelo publicado que detecta estos
-defectos a partir de fotografías del dataset \dat{FDTooth} alcanzó un AUC
-de 0.76 y una especificidad de 0.65, y no distingue entre fenestración y
-dehiscencia \parencite{liu2025fdtooth}. En consecuencia, no existe aún un
-sistema que aproveche ambas modalidades para pre-diagnosticar por diente
-cuál de los dos defectos está presente.
+A esto se suma un problema práctico. La \dat{CBCT} es el examen que mejor
+muestra estos defectos, pero irradia al paciente y toma tiempo, así que no
+se pide en cada control; las radiografías convencionales no alcanzan a
+mostrar el hueso vestibular, y mirar las \dat{fotografías intraorales} a
+simple vista es lento, subjetivo y poco preciso \parencite{liu2025fdtooth}.
+El único modelo publicado que intenta detectarlos desde las fotografías de
+\dat{FDTooth} logró un AUC de 0.76 con una especificidad de 0.65, y ni
+siquiera separa la fenestración de la dehiscencia
+\parencite{liu2025fdtooth}. Hoy no hay, por tanto, un sistema que combine
+ambas imágenes para indicar, diente por diente, cuál de los dos defectos
+está presente.
 
 \subsection{Formulación del Problema}
-Para la identificación del problema general y de los problemas
-específicos se tomó como base la realidad problemática descrita y las
-fases de la metodología propuesta, de modo que cada problema específico
-corresponde a una fase del sistema.
+Las preguntas de investigación salen de la situación descrita y siguen
+las fases del sistema: hay una pregunta general y una pregunta específica
+por cada fase.
 
 \subsubsection{Problema general}
 ¿En qué medida el diseño de un sistema de \sol{visión computacional}
@@ -308,9 +290,8 @@ alveolar} a partir de \dat{fotografías intraorales y tomografías CBCT}?
 \end{description}
 
 \subsection{Objetivos de la Investigación}
-Para la identificación del objetivo general y de los objetivos específicos
-se tomaron como base el problema general y los problemas específicos, de
-modo que cada objetivo responde a uno de ellos.
+Cada objetivo responde a una de las preguntas anteriores, en el mismo
+orden.
 
 \subsubsection{Objetivo general}
 Diseñar un sistema de \sol{visión computacional} para el pre-diagnóstico
@@ -335,165 +316,154 @@ de \prob{fenestración y dehiscencia ósea alveolar} a partir de
 
 \subsection{Justificación de la Investigación}
 \subsubsection{Teórica}
-Esta investigación aporta evidencia sobre qué tipo de representación
-visual distingue mejor la \prob{fenestración} de la \prob{dehiscencia}:
-rasgos diseñados a mano, una red convolucional ajustada o un modelo
-fundacional. \con{Asimismo}, contrasta el aporte de la \dat{fotografía
-intraoral} y de la \dat{CBCT} por separado y combinadas, un aspecto que
-los trabajos previos no han evaluado en una tarea de tres clases
+El estudio responde a una pregunta que la literatura aún no ha resuelto:
+qué forma de describir la imagen separa mejor la \prob{fenestración} de la
+\prob{dehiscencia}, si unos rasgos medidos a mano, una red convolucional
+ajustada o un modelo fundacional. También permite saber cuánto aporta
+cada fuente por sí sola y juntas, la \dat{fotografía intraoral} y la
+\dat{CBCT}, algo que los trabajos previos no midieron con tres clases
 \parencite{liu2025fdtooth,xu2026swinunetr}.
 
 \subsubsection{Práctica}
-Al término de esta investigación se contará con un sistema que clasifica
-cada diente anterior como normal, con fenestración o con dehiscencia, y
-que puede servir al odontólogo como apoyo para decidir cuándo solicitar o
-revisar con mayor detalle una tomografía. Esto es relevante en ortodoncia,
-donde los defectos previos deben identificarse antes de mover los dientes
-\parencite{guo2026consenso}.
+El resultado será un sistema que marca cada diente anterior como normal,
+con fenestración o con dehiscencia. Con esa información, el odontólogo
+puede decidir con más fundamento cuándo pedir una tomografía o en qué
+dientes fijarse al leerla. En ortodoncia esto pesa especialmente, porque
+los defectos que ya existen deben conocerse antes de empezar a mover los
+dientes \parencite{guo2026consenso}.
 
 \subsubsection{Metodológica}
-La investigación aplica un protocolo de evaluación que evita la fuga de
-información: la partición es por paciente, la selección de modelos se
-realiza con validación cruzada anidada y la prueba retenida se usa una
-sola vez. Además, compara tres metodologías bajo las mismas condiciones y
-con intervalos de confianza por \textit{bootstrap}, lo que permite
-replicar el procedimiento en otros problemas de imagen dental.
+Para que los resultados no se inflen, ningún paciente aparece a la vez en
+entrenamiento y en evaluación, los modelos se eligen con validación
+cruzada anidada y los 43 pacientes de prueba se usan una única vez. Las
+tres metodologías se comparan con los mismos datos y con intervalos de
+confianza por \textit{bootstrap}, de modo que el procedimiento puede
+repetirse en otros problemas de imagen dental.
 
 \subsection{Delimitación del Estudio}
 \subsubsection{Espacial}
-El presente trabajo de investigación se desarrolla en la Universidad ESAN,
-en Lima, Perú. Los datos provienen del dataset público \dat{FDTooth},
-recolectado en dos centros de la Facultad de Odontología de la
-Universidad de Hong Kong \parencite{liu2025fdtooth}.
+El estudio se realiza en la Universidad ESAN, en Lima. Las imágenes, sin
+embargo, vienen de Hong Kong: \dat{FDTooth} se recolectó en dos centros de
+la Facultad de Odontología de esa universidad \parencite{liu2025fdtooth}.
 
 \subsubsection{Temporal}
-La presente investigación se desarrolla durante el semestre académico
-2026-2, entre agosto y diciembre de 2026. Los datos utilizados fueron
-recolectados entre enero de 2010 y enero de 2023
+El trabajo se ejecuta en el semestre 2026-2, de agosto a diciembre de
+2026, con datos tomados entre enero de 2010 y enero de 2023
 \parencite{liu2025fdtooth}.
 
 \subsubsection{Conceptual}
-Esta investigación se centra en la clasificación de los 12 dientes
-anteriores de cada paciente en tres clases: normal, \prob{fenestración} y
-\prob{dehiscencia}. El sistema realiza un pre-diagnóstico de apoyo y no
-reemplaza el diagnóstico clínico ni la lectura de la tomografía por un
-especialista. No se aborda el tratamiento de los defectos ni el despliegue
-del sistema en un entorno clínico.
+Solo se clasifican los 12 dientes anteriores de cada paciente, en tres
+clases: normal, \prob{fenestración} y \prob{dehiscencia}. El sistema da
+un pre-diagnóstico de apoyo; no sustituye el criterio clínico ni la
+lectura de la tomografía por un especialista. Quedan fuera el tratamiento
+de los defectos y la puesta en marcha del sistema en una clínica.
 
 % ---------------------------------------------------------------------
 \section{Marco Teórico}
-En el presente capítulo se presentan los antecedentes de la investigación,
-las bases teóricas de la variable independiente y de la variable
-dependiente, el marco conceptual y las hipótesis.
+Aquí se reúne lo que ya se sabe sobre el tema: los estudios previos más
+cercanos, los conceptos detrás de cada variable, las definiciones clave y,
+al final, las hipótesis que se pondrán a prueba.
 
 \subsection{Antecedentes de la Investigación}
-A continuación, se presentan los antecedentes encontrados para entender
-cómo se ha tratado el tema de investigación, organizados según las tres
-metodologías que compara este trabajo.
+Los estudios revisados se agrupan según las tres metodologías que compara
+este trabajo, para ver qué ha funcionado en cada una y qué queda por
+hacer.
 
 \subsubsection{Machine Learning con rasgos diseñados a mano}
-Los clasificadores de \sol{Machine Learning} alimentados con rasgos
-cuantitativos de la imagen, como los radiómicos, de textura y de color, han
-sido ampliamente estudiados para el diagnóstico de \prob{lesiones de los
-maxilares} en \dat{CBCT}. \textcite{song2024radiomics} extrajeron 348
-rasgos radiómicos de las \dat{CBCT} de 326 pacientes para diferenciar
-\prob{ameloblastoma y queratoquiste odontogénico} con seis algoritmos, y
-\sol{XGBoost} alcanzó una exactitud de 0.843, un F1 de 0.841 y un AUC de
-0.872, con un desempeño superior al de los radiólogos. \con{Del mismo
-modo}, \textcite{sha2025radiomics} integraron seis rasgos radiómicos de
-las \dat{CBCT} de 300 pacientes en un clasificador por votación suave que
-combina \sol{Random Forest, SVM y regresión logística}, y obtuvieron en el
-conjunto de prueba valores de AUC de 0.781 a 0.849 y una exactitud de
-0.711 al distinguir tres tipos de \prob{lesiones quísticas}.
-\con{Asimismo}, centrándose en pacientes con \prob{periodontitis},
-\textcite{zhang2026radiomic} emplearon 206 rasgos radiómicos de
-\dat{CBCT}, y el modelo \sol{Random Forest} logró un AUC de 0.710 para
-detectar aterosclerosis carotídea concomitante. \con{Por otra parte},
-\textcite{rashid2026cielab} transformaron mediciones de color \dat{CIELAB}
-de 300 dientes extraídos en rasgos diseñados para clasificar la severidad
-de la \prob{caries oclusal}, y observaron que los modelos basados en
-árboles rindieron por debajo de las redes neuronales, que alcanzaron una
-exactitud balanceada de 0.89. En conjunto, estos trabajos muestran que los
-rasgos diseñados a mano son interpretables y eficaces con muestras
-moderadas, pero ninguno los aplicó a la \prob{fenestración y dehiscencia}
-ni a \dat{fotografías intraorales}.
+Medir propiedades concretas de la imagen (textura, color, rasgos
+radiómicos) y entregárselas a un clasificador de \sol{Machine Learning} es
+una vía bastante explorada para las \prob{lesiones de los maxilares} en
+\dat{CBCT}. Con 348 rasgos radiómicos extraídos de las tomografías de 326
+pacientes, \textcite{song2024radiomics} probaron seis algoritmos para
+separar el \prob{ameloblastoma} del \prob{queratoquiste odontogénico}; el
+mejor, \sol{XGBoost}, llegó a una exactitud de 0.843, un F1 de 0.841 y un
+AUC de 0.872, por encima de los radiólogos. \textcite{sha2025radiomics}
+trabajaron con apenas seis rasgos de las \dat{CBCT} de 300 pacientes, pero
+los combinaron en una votación suave entre \sol{Random Forest, SVM y
+regresión logística}; en su conjunto de prueba distinguieron tres tipos de
+\prob{lesiones quísticas} con AUC de 0.781 a 0.849 y una exactitud de
+0.711. En pacientes con \prob{periodontitis}, \textcite{zhang2026radiomic}
+usaron 206 rasgos de \dat{CBCT} y un \sol{Random Forest} para detectar
+aterosclerosis carotídea asociada, con un AUC de 0.710. Fuera de la
+tomografía, \textcite{rashid2026cielab} convirtieron mediciones de color
+\dat{CIELAB} de 300 dientes extraídos en rasgos para graduar la
+\prob{caries oclusal}: los modelos de árboles quedaron por debajo de las
+redes neuronales, que alcanzaron una exactitud balanceada de 0.89. Estos
+rasgos tienen la ventaja de ser interpretables y de rendir bien con
+muestras medianas, pero nadie los ha llevado todavía a la
+\prob{fenestración y dehiscencia} ni a las \dat{fotografías intraorales}.
 
 \subsubsection{Deep Learning para la evaluación del hueso alveolar}
-Conscientes de las limitaciones de los rasgos diseñados a mano, trabajos
-recientes han aplicado \sol{Deep Learning} a la evaluación del
-\prob{soporte óseo periodontal}. \textcite{tichy2026periodontology}
-revisaron 29 estudios de \sol{Deep Learning} para el diagnóstico de
-\prob{periodontitis} y reportaron exactitudes de 81 a 99\,\% en
-radiografías panorámicas y de 78\,\% en \dat{CBCT}, así como un AUROC de
-0.93 en el cribado con \dat{fotografías}, aunque advirtieron que la
-mayoría utilizó datos de un solo centro. \con{Del mismo modo},
-\textcite{yang2026horizontal} entrenaron una \sol{3D-ResNet} con 505
-\dat{CBCT} para clasificar la \prob{pérdida ósea horizontal} de los
-primeros molares inferiores y alcanzaron una exactitud global de 0.829,
-comparable a la de los odontólogos (0.820). \con{Asimismo},
-\textcite{palkovics2026segmentation} utilizaron una \sol{SegResNet} para
-segmentar en \dat{CBCT} los \prob{defectos periodontales infraóseos}
-mandibulares con mediciones confiables, mientras que
-\textcite{xu2026swinunetr} entrenaron un \sol{Swin UNETR} con 10\,752
-cortes sagitales de \dat{CBCT} y detectaron la \prob{fenestración y
-dehiscencia} con exactitudes de 0.82 a 0.95 a nivel de diente. \con{Por
-otra parte}, en el caso de las \dat{fotografías intraorales},
-\textcite{mao2025photographs} analizaron 26 estudios de detección de
-\prob{enfermedad periodontal} y hallaron exactitudes de clasificación de
-0.46 a 1.00, con solo 9 estudios que usaron más de una vista. \con{De
-igual manera}, \textcite{li2026transverse} compararon seis \sol{redes
-convolucionales} entrenadas con \dat{fotografías intraorales frontales} de
-826 pacientes, usando como referencia mediciones derivadas de \dat{CBCT},
-y \sol{ResNet-18} alcanzó una exactitud de 90.62\,\% en un conjunto de
-prueba externo para detectar la \prob{deficiencia transversal maxilar}.
-Estos resultados confirman que un modelo basado en fotografías puede
-aprender de etiquetas obtenidas por \dat{CBCT}, aunque el desempeño varía
-según la tarea y la vista utilizada.
+El paso siguiente ha sido dejar que la red aprenda por sí misma qué mirar
+en el \prob{soporte óseo periodontal}. En una revisión de 29 estudios de
+\sol{Deep Learning} sobre \prob{periodontitis},
+\textcite{tichy2026periodontology} encontraron exactitudes de 81 a 99\,\%
+en radiografías panorámicas, de 78\,\% en \dat{CBCT} y un AUROC de 0.93
+cuando el cribado se hacía con \dat{fotografías}; eso sí, casi todos los
+trabajos usaban datos de un único centro. \textcite{yang2026horizontal}
+entrenaron una \sol{3D-ResNet} con 505 \dat{CBCT} para clasificar la
+\prob{pérdida ósea horizontal} en primeros molares inferiores y lograron
+una exactitud de 0.829, prácticamente igual a la de los odontólogos
+(0.820). Otros equipos se han concentrado en medir el defecto:
+\textcite{palkovics2026segmentation} segmentaron con una \sol{SegResNet}
+los \prob{defectos infraóseos} mandibulares y obtuvieron mediciones
+fiables, y \textcite{xu2026swinunetr} entrenaron un \sol{Swin UNETR} con
+10\,752 cortes sagitales de \dat{CBCT} que detectó la \prob{fenestración
+y dehiscencia} con exactitudes de 0.82 a 0.95 por diente.
+
+Con \dat{fotografías intraorales} el panorama es más irregular.
+\textcite{mao2025photographs} reunieron 26 estudios sobre
+\prob{enfermedad periodontal} y vieron exactitudes que iban de 0.46 a 1.00;
+solo 9 de ellos usaban más de una vista. \textcite{li2026transverse}, por
+su parte, compararon seis \sol{redes convolucionales} entrenadas con
+\dat{fotografías frontales} de 826 pacientes y etiquetadas a partir de
+mediciones en \dat{CBCT}; \sol{ResNet-18} detectó la \prob{deficiencia
+transversal maxilar} con 90.62\,\% de exactitud en una prueba externa.
+Este último caso muestra que una red que solo ve fotografías puede
+aprender de etiquetas tomadas de la tomografía, aunque cuánto logra
+depende mucho de la tarea y de la vista.
 
 \subsubsection{Modelos fundacionales y fusión multimodal}
-Ante la escasez de datos etiquetados, los \sol{modelos fundacionales}
-preentrenados de forma autosupervisada y la \sol{fusión multimodal} se
-perfilan como alternativas al entrenamiento supervisado desde cero.
-\textcite{hu2025selfsupervised} adaptaron \sol{DINOv2} mediante
-aprendizaje autosupervisado específico del dominio para segmentar
-\dat{radiografías periapicales} con pocas anotaciones, y lograron un Dice
-de 74.77\,\% frente a 33.53--41.55\,\% de U-Net y DeepLabV3+.
-\con{Del mismo modo}, \textcite{li2025hcnet} preentrenaron y ajustaron el
-modelo \sol{HC-Net+} con 10\,881 \dat{ortopantomografías} para detectar
-\prob{periodontitis} en estadios II a IV y superaron a los periodoncistas,
-con un AUROC de 94.2\,\% frente a 85.6\,\%. \con{Asimismo},
-\textcite{feng2026multimodal} revisaron la \sol{fusión de datos
-multimodales} en ortodoncia y concluyeron que integrar modalidades
-compensa las limitaciones de resolución y de especificidad tisular de
-cada una por separado. Sin embargo, el único trabajo que aborda la
-\prob{fenestración y dehiscencia} con \dat{fotografías intraorales}
-pareadas con \dat{CBCT}, el de \textcite{liu2025fdtooth}, empleó un
-ensamble de \sol{redes convolucionales} supervisadas solo sobre la
-fotografía y en una tarea binaria. Hasta donde se conoce, no se ha
-evaluado un \sol{modelo fundacional} ni la \sol{fusión} de ambas
-modalidades para distinguir por diente entre normal, \prob{fenestración} y
+Cuando hay pocas imágenes etiquetadas, dos alternativas ganan interés:
+partir de un \sol{modelo fundacional} preentrenado sin etiquetas y
+combinar varias fuentes de imagen. \textcite{hu2025selfsupervised}
+siguieron la primera: adaptaron \sol{DINOv2} al dominio dental con
+aprendizaje autosupervisado y, con pocas anotaciones, segmentaron
+\dat{radiografías periapicales} con un Dice de 74.77\,\%, mientras que
+U-Net y DeepLabV3+ se quedaron entre 33.53 y 41.55\,\%. En la misma línea,
+\textcite{li2025hcnet} preentrenaron \sol{HC-Net+} con 10\,881
+\dat{ortopantomografías} y, al detectar \prob{periodontitis} en estadios
+II a IV, superaron a periodoncistas con experiencia (AUROC de 94.2\,\%
+frente a 85.6\,\%). Sobre la segunda alternativa,
+\textcite{feng2026multimodal} revisaron la \sol{fusión multimodal} en
+ortodoncia y concluyeron que juntar modalidades compensa lo que a cada una
+le falta en resolución o en detalle del tejido.
+
+Para la \prob{fenestración y dehiscencia}, en cambio, el único estudio
+con \dat{fotografías intraorales} y \dat{CBCT} de los mismos pacientes es
+el de \textcite{liu2025fdtooth}, y su modelo usó solo la fotografía para
+responder si había defecto o no. No se encontró ningún trabajo que pruebe
+un \sol{modelo fundacional} o la \sol{fusión} de ambas imágenes para
+decir, diente por diente, si es normal, tiene \prob{fenestración} o tiene
 \prob{dehiscencia}.
 
 \subsection{Bases Teóricas}
 \subsubsection{Variable independiente: sistema de visión computacional}
 
 \paragraph{Definición}
-El aprendizaje automático o \sol{Machine Learning} es un componente de la
-inteligencia artificial que usa algoritmos para que las computadoras
-aprendan patrones a partir de grandes cantidades de datos y hagan
-predicciones sobre datos nuevos sin una programación explícita. El
-aprendizaje profundo o \sol{Deep Learning} es un subconjunto del Machine
-Learning que usa redes neuronales con muchas capas ocultas y permite
-tareas complejas como el análisis de imágenes médicas
-\parencite{yuan2026integrating}. Dentro de este campo, el reconocimiento de
-imágenes es una tarea fundamental de la \sol{visión computacional}, y en
-odontología resulta clave porque el cribado, el diagnóstico y la
-planificación del tratamiento de la mayoría de las enfermedades bucales
-dependen de la interpretación de fotografías clínicas, radiografías e
-imágenes histopatológicas \parencite{yuan2026integrating}. En esta
-investigación, el sistema de visión computacional es el conjunto de fases
-que transforma las \dat{fotografías intraorales y tomografías CBCT} de un
-paciente en una clase por diente.
+En el \sol{Machine Learning} o aprendizaje automático, en lugar de
+escribir reglas a mano, se le muestran ejemplos a un algoritmo para que
+encuentre por su cuenta los patrones que le permitan predecir casos
+nuevos. El \sol{Deep Learning} es la rama que hace esto con redes
+neuronales de muchas capas, y es la que ha permitido analizar imágenes
+médicas con buenos resultados \parencite{yuan2026integrating}. Reconocer
+lo que hay en una imagen es la tarea central de la \sol{visión
+computacional}, y en odontología tiene un peso especial: buena parte del
+cribado, el diagnóstico y la planificación se decide mirando fotografías,
+radiografías o cortes histológicos \parencite{yuan2026integrating}. Para
+este trabajo, el sistema de visión computacional es la cadena de fases
+que recibe la \dat{fotografía intraoral y la tomografía CBCT} de un
+paciente y devuelve una clase para cada diente.
 
 \paragraph{Clasificación}
 Según la forma en que obtienen la representación de la imagen, los
@@ -521,14 +491,13 @@ métodos que compara este trabajo se clasifican en tres grupos:
 \end{itemize}
 
 \paragraph{Primeras referencias}
-Las primeras aplicaciones de la visión computacional a estos defectos son
-recientes. \textcite{liu2025fdtooth} publicaron \dat{FDTooth}, el primer
-dataset público que combina fotografías intraorales y tomografías CBCT
-para su detección, junto con un modelo de referencia basado solo en
-fotografías. \con{Del mismo modo}, \textcite{xu2026swinunetr} propusieron
-un modelo de Deep Learning que mide y detecta ambos defectos directamente
-en cortes de CBCT. Estos trabajos constituyen el punto de partida de la
-presente investigación.
+Aplicar visión computacional a estos defectos es algo muy reciente. En
+2025, \textcite{liu2025fdtooth} publicaron \dat{FDTooth}, el primer dataset
+abierto con fotografías intraorales y tomografías CBCT pensado para
+detectarlos, y lo acompañaron de un modelo de referencia que solo usaba
+las fotografías. Un año después, \textcite{xu2026swinunetr} presentaron una
+red de Deep Learning que mide y detecta ambos defectos sobre los cortes de
+CBCT. De esos dos trabajos parte el presente estudio.
 
 \subsubsection{Variable dependiente: pre-diagnóstico de fenestración y
 dehiscencia}
@@ -541,21 +510,20 @@ raíz y suele afectar al margen óseo \parencite{liu2025fdtooth}. En esta
 investigación, el pre-diagnóstico es la clasificación automática de cada
 diente anterior como normal, con fenestración o con dehiscencia, que
 orienta pero no sustituye la evaluación del especialista. La
-Figura~\ref{fig:ejemplos} muestra un diente de cada clase en las dos
-modalidades: en la \dat{fotografía intraoral} solo se observan la encía y
-la corona, mientras que el corte vestíbulo-lingual de la \dat{CBCT} permite
-ver la cortical ósea que cubre la raíz.
+Figura~\ref{fig:ejemplos} muestra un incisivo lateral inferior de cada
+clase, tomado del conjunto de desarrollo entre los clasificados
+correctamente con alta confianza. En cada par, a la izquierda se ve el
+recorte de la \dat{fotografía intraoral}, donde solo se observan la encía
+y la corona, y a la derecha el corte vestíbulo-lingual de la \dat{CBCT}
+(V: vestibular; L: lingual), que permite ver la cortical ósea que cubre la
+raíz.
 
 \begin{figure}[!htbp]
 \caption{Ejemplos de diente normal, con fenestración y con dehiscencia}
 \label{fig:ejemplos}
 \centering
 \includegraphics{ejemplos_clases.pdf}
-\fuente{Incisivos laterales inferiores del conjunto de desarrollo de
-\dat{FDTooth} \parencite{liu2025fdtooth}, clasificados correctamente con
-alta confianza. A la izquierda de cada par, el recorte de la fotografía
-intraoral; a la derecha, el corte de la tomografía CBCT (V: vestibular;
-L: lingual). Elaboración propia.}
+\fuente{Elaboración propia con datos de \dat{FDTooth} \parencite{liu2025fdtooth}.}
 \end{figure}
 
 \paragraph{Factores}
@@ -567,18 +535,17 @@ los dientes anteriores inferiores de pacientes con maloclusión esquelética
 Clase III de ángulo alto y en pacientes con biprotrusión, mientras que la
 fenestración predomina en los dientes anteriores superiores de pacientes
 con maloclusión esquelética Clase II \parencite{guo2026consenso}.
-\con{Asimismo}, un fenotipo periodontal delgado, una recesión gingival
-previa y un reborde alveolar estrecho aumentan el riesgo de que aparezcan
-o se agraven durante el tratamiento ortodóntico \parencite{guo2026consenso}.
+El riesgo de que aparezcan o empeoren durante la ortodoncia sube, \con{además},
+cuando la encía es delgada, ya hay recesión o el reborde alveolar es
+estrecho \parencite{guo2026consenso}.
 
 \paragraph{Etapas}
-Según el momento en que aparecen, los defectos pueden ser previos al
-tratamiento, cuando ya están presentes en la evaluación inicial, o
-adquiridos durante el tratamiento ortodóntico, en particular cuando el
-movimiento planificado excede los límites del hueso alveolar
-\parencite{guo2026consenso}. Si no se detectan, la raíz expuesta favorece
-la acumulación de placa y la inflamación, y la enfermedad periodontal
-puede progresar hasta la pérdida del diente \parencite{liu2025fdtooth}.
+Hay defectos que el paciente ya trae a la primera consulta y otros que se
+producen durante la ortodoncia, sobre todo cuando se mueve el diente más
+allá de lo que permite el hueso alveolar \parencite{guo2026consenso}. Si
+pasan inadvertidos, la raíz descubierta retiene placa, la encía se
+inflama y la enfermedad periodontal puede avanzar hasta que el diente se
+pierde \parencite{liu2025fdtooth}.
 
 \paragraph{Características}
 En las fotografías intraorales, los dientes con estos defectos suelen
@@ -590,21 +557,22 @@ morfológicos distintos, y su grosor y el grosor gingival son predictores
 clave de esa morfología \parencite{domic2026buccal}.
 
 \paragraph{Técnicas}
-Las radiografías bidimensionales, como las periapicales, no muestran con
-suficiente detalle los defectos vestibulares o linguales, por lo que la
-\dat{CBCT} es la modalidad de imagen de elección para su diagnóstico
-\parencite{liu2025fdtooth}. Las fotografías intraorales se proponen como un
-primer paso no invasivo para identificar los dientes en riesgo y orientar
-el uso de la CBCT \parencite{liu2025fdtooth}, y los modelos de Deep
-Learning ya permiten detectar los defectos de forma automática en cortes
-tomográficos \parencite{xu2026swinunetr}.
+Una radiografía periapical proyecta el diente en dos dimensiones y deja
+ocultas las paredes vestibular y lingual, justo donde están estos
+defectos; por eso el diagnóstico se hace con \dat{CBCT}
+\parencite{liu2025fdtooth}. La fotografía intraoral se ha propuesto como
+filtro previo, sin radiación, para señalar qué dientes conviene revisar
+en la tomografía \parencite{liu2025fdtooth}, y en los cortes de CBCT ya hay
+modelos de Deep Learning que los detectan de forma automática
+\parencite{xu2026swinunetr}.
 
 \subsubsection{Otros temas: métricas de evaluación}
-Para un problema de clasificación en tres clases, cada métrica se calcula
-a partir de los verdaderos positivos ($VP$), falsos positivos ($FP$) y
-falsos negativos ($FN$) de cada clase $c$. La precisión y la sensibilidad
-(\textit{recall}) se definen en las Ecuaciones \eqref{eq:prec} y
-\eqref{eq:rec}, y el F1 de cada clase en la Ecuación \eqref{eq:f1}:
+Con tres clases, cada una se evalúa por separado contando, para la clase
+$c$, los aciertos ($VP$), los dientes asignados a ella por error ($FP$) y
+los que le pertenecían pero se asignaron a otra ($FN$). Con esos conteos
+se obtienen la precisión (Ecuación \eqref{eq:prec}), la sensibilidad o
+\textit{recall} (Ecuación \eqref{eq:rec}) y el F1 que combina ambas
+(Ecuación \eqref{eq:f1}):
 \begin{align}
 \text{Precisión}_c &= \frac{VP_c}{VP_c + FP_c} \label{eq:prec}\\
 \text{Recall}_c &= \frac{VP_c}{VP_c + FN_c} \label{eq:rec}\\
@@ -660,9 +628,8 @@ Reentrenamiento de los pesos de una red preentrenada con los datos de un
 problema específico para adaptar sus representaciones a ese problema.
 
 \subsection{Hipótesis}
-Para la identificación de la hipótesis general y de las hipótesis
-específicas se tomaron como base los problemas y objetivos identificados
-previamente.
+Las hipótesis son las respuestas tentativas a las preguntas del
+Capítulo I y siguen su misma numeración.
 
 \subsubsection{Hipótesis general}
 Mediante el diseño de un sistema de \sol{visión computacional} es posible
@@ -690,36 +657,32 @@ intraoral.
 
 % ---------------------------------------------------------------------
 \section{Metodología}
-En el presente capítulo se define el diseño, el tipo y el enfoque de la
-investigación, y se describen la población y la muestra, la
-operacionalización de variables, la recolección de datos y la
-metodología de implementación de la solución.
+Este capítulo explica cómo se responderán las preguntas planteadas: qué
+tipo de estudio es, con qué datos se trabaja, cómo se miden las variables
+y qué fases sigue el sistema.
 
 \subsection{Diseño de la investigación}
 \subsubsection{Diseño}
-Según \textcite{hernandez2018metodologia}, en un diseño experimental se
-manipulan deliberadamente una o más variables independientes para
-analizar sus consecuencias sobre una o más variables dependientes en una
-situación de control. El diseño del presente trabajo de investigación es
-experimental, porque se manipula la variable independiente, el sistema de
-visión computacional, mediante tres metodologías y tres modalidades de
-entrada, y se observa su efecto sobre la variable dependiente, el
-desempeño del pre-diagnóstico, bajo las mismas particiones de datos.
+Un estudio es experimental cuando el investigador cambia a propósito una
+o más condiciones y observa qué efecto tiene ese cambio sobre el
+resultado, manteniendo lo demás bajo control
+\parencite{hernandez2018metodologia}. Eso es lo que se hace aquí: se varía
+el sistema de visión computacional (tres metodologías y tres tipos de
+entrada) y se mide cómo cambia el desempeño del pre-diagnóstico, siempre
+sobre las mismas particiones de pacientes.
 
 \subsubsection{Tipo}
-Para \textcite{hernandez2018metodologia}, la investigación aplicada busca
-resolver problemas prácticos. El presente trabajo de investigación es de
-tipo aplicado, porque busca ofrecer un apoyo al odontólogo para
-identificar los dientes con fenestración o dehiscencia sin depender solo de
-la inspección visual.
+La investigación es aplicada, ya que su fin no es solo ampliar el
+conocimiento sino resolver un problema concreto
+\parencite{hernandez2018metodologia}: dar al odontólogo una herramienta
+que le ayude a reconocer los dientes con fenestración o dehiscencia sin
+fiarse solo de lo que ve.
 
 \subsubsection{Enfoque}
-Según \textcite{hernandez2018metodologia}, el enfoque cuantitativo usa la
-recolección de datos y el análisis estadístico para probar hipótesis
-siguiendo un proceso secuencial. El enfoque de la presente investigación
-es cuantitativo, porque las imágenes se transforman en valores numéricos
-y el desempeño de los modelos se mide con métricas y con intervalos de
-confianza.
+El enfoque es cuantitativo, porque las hipótesis se contrastan con datos
+numéricos y análisis estadístico, siguiendo pasos ordenados
+\parencite{hernandez2018metodologia}. Cada imagen se convierte en números
+y cada modelo se juzga por métricas con sus intervalos de confianza.
 
 \subsection{Población y Muestra}
 \subsubsection{Población}
@@ -732,15 +695,13 @@ normal, con \prob{fenestración} o con \prob{dehiscencia}
 \parencite{liu2025fdtooth}.
 
 \subsubsection{Muestra}
-La muestra se obtiene mediante un muestreo no probabilístico por
-conveniencia \parencite{hernandez2018metodologia}, ya que se incluyen
-todos los pacientes que cumplen los criterios de calidad de los datos. Se
-excluyen 24 pacientes, 23 por discordancia entre las etiquetas del
-archivo CSV y del archivo JSON y uno por coordenadas de cajas
-incompatibles con la imagen, de modo que la muestra queda conformada por
-217 pacientes y 2604 dientes. La unidad de análisis es el diente
-anterior. La Tabla~\ref{tab:poblacion} resume la población, la muestra y
-la unidad de análisis del estudio.
+No se sortea a los pacientes: entran todos los que tienen datos
+confiables, lo que corresponde a un muestreo no probabilístico por
+conveniencia \parencite{hernandez2018metodologia}. Se descartan 24
+pacientes, 23 porque las etiquetas del CSV y del JSON no coinciden y uno
+porque las cajas no encajan con su fotografía. Quedan 217 pacientes y
+2604 dientes, y cada diente anterior es una unidad de análisis. La
+Tabla~\ref{tab:poblacion} reúne estos datos.
 
 \begin{table}[!htbp]
 \caption{Población, muestra y unidad de análisis}
@@ -775,12 +736,12 @@ conjuntos.
 \label{fig:cohorte}
 \centering
 \includegraphics{flujo_cohorte.pdf}
-\fuente{N: normal; F: fenestración; D: dehiscencia. Elaboración propia.}
+\fuente{Elaboración propia. N: normal; F: fenestración; D: dehiscencia.}
 \end{figure}
 
 \subsection{Operacionalización de Variables}
-La Tabla~\ref{tab:operacionalizacion} presenta la operacionalización de la
-variable independiente y de la variable dependiente.
+En la Tabla~\ref{tab:operacionalizacion} se indica, para cada variable,
+qué aspectos se observan y con qué indicador se miden.
 
 \begin{table}[!htbp]
 \caption{Operacionalización de variables}
@@ -806,18 +767,16 @@ Variable & Dimensión & Indicador & Medición \\
 \end{table}
 
 \subsection{Técnicas de Recolección de Datos}
-La recolección de datos se realiza de forma digital mediante la descarga
-del dataset \dat{FDTooth} desde la plataforma PhysioNet, que lo distribuye
-con acceso acreditado. El dataset corresponde al trabajo de
-\textcite{liu2025fdtooth} e incluye, para cada paciente, una fotografía
-intraoral en formato JPEG de $5760 \times 3840$ píxeles, una tomografía
-CBCT en formato DICOM con un tamaño de vóxel de 0.15 a 0.18 mm, un archivo
-CSV con la etiqueta de cada uno de los 12 dientes anteriores y las cajas
-delimitadoras de los dientes en la fotografía. Las etiquetas provienen de
-la lectura de la CBCT por dos odontólogos experimentados, con una
-concordancia $\kappa > 0.9$ \parencite{liu2025fdtooth}. La
-Tabla~\ref{tab:clases} describe las clases y su distribución en el
-conjunto de desarrollo y en la prueba retenida.
+No se toman datos nuevos de pacientes: se descarga \dat{FDTooth} desde
+PhysioNet, que solo lo entrega a investigadores acreditados. Este dataset,
+publicado por \textcite{liu2025fdtooth}, trae por cada paciente una
+fotografía intraoral JPEG de $5760 \times 3840$ píxeles, una tomografía
+CBCT en DICOM con vóxeles de 0.15 a 0.18 mm, un archivo CSV con la
+etiqueta de los 12 dientes anteriores y la caja que ubica cada diente en
+la fotografía. Las etiquetas las pusieron dos odontólogos con experiencia
+leyendo la CBCT, y coincidieron casi siempre ($\kappa > 0.9$)
+\parencite{liu2025fdtooth}. La Tabla~\ref{tab:clases} muestra cuántos
+dientes de cada clase hay en desarrollo y en prueba.
 
 \begin{table}[!htbp]
 \caption{Clases del estudio y distribución por conjunto}
@@ -839,14 +798,14 @@ Total & Dientes (pacientes: 174 y 43) & 2088 & 516 \\
 
 \subsection{Metodología de la implementación de la solución}
 \subsubsection{Selección de la metodología}
-La metodología seleccionada se basa en el flujo habitual de los sistemas
-de visión computacional en odontología, que transforma la imagen en una
-representación y luego la clasifica \parencite{yuan2026integrating}. Sobre
-ese flujo se organizan cuatro fases y se comparan tres metodologías que
-difieren en cómo obtienen la representación: M1 con rasgos diseñados a
-mano, M2 con el ajuste fino de una red convolucional y M3 con un modelo
-fundacional congelado. La Figura~\ref{fig:metodologia} muestra la
-metodología propuesta.
+Casi todos los sistemas de visión computacional en odontología hacen lo
+mismo en dos pasos: primero convierten la imagen en una descripción
+numérica y después la clasifican \parencite{yuan2026integrating}. Este
+trabajo respeta ese esquema, lo divide en cuatro fases y cambia solo la
+manera de describir la imagen, lo que da lugar a tres metodologías: M1
+mide rasgos a mano, M2 ajusta una red convolucional y M3 usa un modelo
+fundacional sin modificarlo. La Figura~\ref{fig:metodologia} resume el
+recorrido completo.
 
 \begin{figure}[!htbp]
 \caption{Metodología propuesta}
@@ -859,29 +818,27 @@ metodología propuesta.
 \subsubsection{Desarrollo de la metodología}
 % Fases según img/metodologia.png. Cada fase origina un PE, un OE y una HE.
 \paragraph{Fase 1: Datos y control de calidad}
-En esta fase se verifica la integridad de los 487 archivos del dataset
-\dat{FDTooth} mediante sumas SHA256 y se contrastan las etiquetas del
-archivo CSV con las del archivo JSON de anotaciones dentales. Se excluyen
-los pacientes con etiquetas discordantes o con coordenadas de cajas
-incompatibles con la imagen, y se obtiene una cohorte de 217 pacientes y
-2604 dientes. Esta fase responde al OE1.
+Antes de usar los datos se comprueba, con sumas SHA256, que ninguno de
+los 487 archivos de \dat{FDTooth} esté dañado, y se compara la etiqueta de
+cada diente en el CSV con la del JSON de anotaciones. Quedan fuera los
+pacientes cuyas etiquetas no coinciden o cuyas cajas no encajan con la
+imagen; al final se conservan 217 pacientes y 2604 dientes. Con esta fase
+se cumple el OE1.
 
 \paragraph{Fase 2: Preprocesamiento}
-En la \dat{fotografía intraoral}, cada diente se recorta a partir de su
-caja delimitadora, ampliada hacia la encía para incluir el margen
-gingival, se lleva a una orientación canónica y se redimensiona a 768
-píxeles en su lado largo sin deformar la imagen. Luego se normaliza el
-color con el método \sol{Gray-world}, que corrige el balance de blancos, y
-con \sol{CLAHE}, que realza el contraste local. \con{Asimismo}, la
-\dat{CBCT} se convierte de DICOM a valores tipo unidades Hounsfield y se
-segmenta con \sol{TotalSegmentator}
-\parencite{wasserthal2023totalsegmentator}, que identifica cada diente
-según la numeración FDI. A partir de cada segmentación se extrae una región
-de interés 3D de $14 \times 10 \times 32$ mm, alineada con el eje del
-diente y remuestreada a vóxeles de 0.2 mm. Por último, la cohorte se
-particiona por paciente en un conjunto de desarrollo de 174 pacientes
-(2088 dientes) y una prueba retenida de 43 pacientes (516 dientes). Esta
-fase responde al OE2.
+De la \dat{fotografía intraoral} se recorta cada diente con su caja,
+agrandada hacia arriba para no perder el borde de la encía; el recorte se
+gira a una orientación común y se lleva a 768 píxeles en su lado mayor
+sin deformarlo. El color se corrige con \sol{Gray-world}, que equilibra el
+blanco, y el contraste local con \sol{CLAHE}. La \dat{CBCT}, por su
+parte, se pasa de DICOM a valores tipo unidades Hounsfield y se segmenta
+con \sol{TotalSegmentator} \parencite{wasserthal2023totalsegmentator},
+que reconoce cada diente por su número FDI. Alrededor de cada diente se
+recorta un bloque 3D de $14 \times 10 \times 32$ mm, orientado según su
+eje y remuestreado a vóxeles de 0.2 mm. Por último, los pacientes se
+reparten en dos grupos que no se mezclan: 174 (2088 dientes) para
+desarrollo y 43 (516 dientes) para la prueba final. Con esta fase se
+cumple el OE2.
 
 \paragraph{Fase 3: Extracción de características y modelado}
 En la M1, cada diente se representa con rasgos diseñados a mano: el
@@ -899,8 +856,8 @@ fotografía, con una representación 2.5D de la CBCT y con la fusión de
 ambas en una arquitectura de dos ramas. El entrenamiento usa una pérdida
 ponderada por clase, aumento de datos y aumento en inferencia (TTA), con
 la tasa de aprendizaje y el número de épocas elegidos en desarrollo, y en
-la prueba se promedian las probabilidades de tres semillas. \con{Por otra
-parte}, en la M3 el modelo fundacional \sol{DINOv2 ViT-B/14}
+la prueba se promedian las probabilidades de tres semillas. En la M3, en
+cambio, el modelo fundacional \sol{DINOv2 ViT-B/14}
 \parencite{oquab2023dinov2} se usa como extractor congelado, y sus
 representaciones se reducen por análisis de componentes principales y se
 clasifican con \sol{regresión logística} y \sol{SVM}. Finalmente, se
@@ -923,18 +880,17 @@ reentrena con todo el conjunto de desarrollo y se evalúa una sola vez en
 la prueba retenida. Esta fase responde al OE4.
 
 \subsubsection{Metodología para la medición de resultados}
-El análisis de los resultados de la implementación se realiza mediante la
-evaluación de las métricas definidas en las Ecuaciones \ref{eq:prec} a
-\ref{eq:acc}, del AUC-ROC y de la matriz de confusión. La métrica
-principal es el \textit{Macro-F1}, porque pondera por igual las tres
-clases y no premia a un modelo que solo acierta la clase mayoritaria. Los
-intervalos de confianza del 95\,\% y las diferencias entre modelos se
-estiman mediante \textit{bootstrap} pareado de pacientes con 2000
-remuestreos, y una diferencia se considera significativa cuando su
-intervalo no incluye el cero. Con estos criterios se contrastan las
-hipótesis: la HE3 compara el \textit{Macro-F1} de las tres metodologías y
-la HE4 y la hipótesis general comparan los modelos con CBCT frente a los
-que usan solo la fotografía.
+Cada modelo se juzga con las métricas de las Ecuaciones \ref{eq:prec} a
+\ref{eq:acc}, el AUC-ROC y la matriz de confusión. Manda el
+\textit{Macro-F1}: como da el mismo peso a las tres clases, un modelo que
+acierte solo los dientes normales, que son mayoría, no puede obtener un
+buen puntaje. Para saber cuánto confiar en cada cifra se remuestrean los
+pacientes 2000 veces (\textit{bootstrap} pareado) y se obtienen
+intervalos de confianza del 95\,\%; dos modelos se consideran distintos
+solo si el intervalo de su diferencia no contiene el cero. Así se
+contrastan las hipótesis: la HE3 compara las tres metodologías entre sí,
+y la HE4 y la hipótesis general enfrentan los modelos con CBCT a los que
+solo ven la fotografía.
 
 % ======================= REFERENCIAS (APA 7) =========================
 \clearpage
