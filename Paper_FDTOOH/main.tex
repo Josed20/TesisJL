@@ -3,7 +3,7 @@
 % Borrador en ESPAÑOL; la traducción al inglés se hará al final.
 % Compilar: latexmk -pdf main.tex   (pdflatex + bibtex, estilo splncs04)
 % Guía de redacción: GUIA_REDACCION_PAPER.md
-% Extensión: ~11 páginas; el usuario prioriza conservar Trabajos Relacionados completo.
+% Extensión: 12 páginas (LNCS full paper: 12–15 con referencias). Related Works según guía v5.
 % =====================================================================
 \documentclass[runningheads]{llncs}
 
@@ -13,21 +13,31 @@
 \usepackage[spanish,es-tabla,es-nodecimaldot,es-nosectiondot]{babel}
 \usepackage{graphicx}
 \usepackage{booktabs}
+\usepackage{array}
+\usepackage{placeins}
 \usepackage{amsmath}
 \usepackage[hidelinks]{hyperref}
 \usepackage{xcolor}
 \graphicspath{{img/}}
 \renewcommand{\keywordname}{{\bfseries Palabras clave:}}
+% Plantilla Springer ESAN: leyenda «Fig. 1.» (babel pondría «Figura»)
+\addto\captionsspanish{\renewcommand{\figurename}{Fig.}}
 \renewcommand{\andname}{y}
 \renewcommand{\lastandname}{\unskip\ y}
 
 % ---- Código de colores de redacción (guías del curso) -----------------
 % \prob{} problema (VD) = azul   | \sol{} solución/técnica (VI) = rojo
 % \dat{}  dataset/datos  = verde  | \con{} conector de adición = resaltado
+% Trabajos Relacionados (guía Related Works_v5):
+% \res{} resultados/métricas = morado | \hal{} hallazgo = resaltado verde
+%   (\hal usa soul: dentro solo texto plano, sin macros ni \cite)
 % Para la versión final cambia \colorestrue por \coloresfalse.
+\usepackage{soulutf8}
 \definecolor{problema}{RGB}{0,112,192}
 \definecolor{solucion}{RGB}{192,0,0}
 \definecolor{dataset}{RGB}{0,128,0}
+\definecolor{resultado}{RGB}{112,48,160}
+\definecolor{hallazgo}{RGB}{0,255,0}
 \newif\ifcolores
 \colorestrue
 \ifcolores
@@ -35,11 +45,15 @@
   \newcommand{\sol}[1]{\textcolor{solucion}{\textbf{#1}}}
   \newcommand{\dat}[1]{\textcolor{dataset}{\textbf{#1}}}
   \newcommand{\con}[1]{{\setlength{\fboxsep}{0.5pt}\colorbox{yellow}{\strut #1}}}
+  \newcommand{\res}[1]{\textcolor{resultado}{\textbf{#1}}}
+  \newcommand{\hal}[1]{{\sethlcolor{hallazgo}\hl{#1}}}
 \else
   \newcommand{\prob}[1]{#1}
   \newcommand{\sol}[1]{#1}
   \newcommand{\dat}[1]{#1}
   \newcommand{\con}[1]{#1}
+  \newcommand{\res}[1]{#1}
+  \newcommand{\hal}[1]{#1}
 \fi
 
 \begin{document}
@@ -62,24 +76,26 @@ Universidad Tecnológica del Perú, Lima, Perú\\
 \maketitle
 
 \begin{abstract}
-% Contexto (problema) -> objetivo -> metodología (M1, M2, M3) -> resultados
-% principales (Macro-F1 en la prueba retenida) -> conclusión.
+% Contexto (problema) -> objetivo -> metodología (ensambles híbridos) ->
+% resultados principales (Macro-F1 en la prueba retenida) -> conclusión.
 La \prob{fenestración} y la \prob{dehiscencia ósea alveolar} son defectos
 frecuentes en los dientes anteriores, cuyo diagnóstico depende de la
 \dat{CBCT}. Este trabajo propone el diseño de un sistema de \sol{visión
 computacional} para su pre-diagnóstico por diente a partir de
 \dat{fotografías intraorales y tomografías CBCT}. Sobre el dataset
-\dat{FDTooth} (217 pacientes y 2604 dientes) se compararon rasgos
-diseñados a mano con \sol{Machine Learning} (M1), ajuste fino de
-\sol{ConvNeXt V2 Tiny} (M2) y el modelo fundacional \sol{DINOv2} congelado
-con clasificadores (M3), elegidos por validación cruzada agrupada por
-paciente y evaluados una sola vez en una prueba retenida de 43 pacientes.
-Con solo la fotografía, ningún modelo superó 0.551 de \textit{Macro-F1},
-mientras que el ensamble de M2 y M1 con la \dat{CBCT} obtuvo 0.842 (IC
-95\,\%: 0.783--0.891), un AUC de 0.940 y una sensibilidad de 0.979 para
-detectar dientes con algún defecto. La \dat{CBCT} resultó indispensable, y
-el ajuste fino superó de forma significativa a los rasgos diseñados y al
-modelo fundacional congelado.
+\dat{FDTooth} (217 pacientes y 2604 dientes) se construyeron
+\sol{ensambles híbridos} que promedian las probabilidades de
+\sol{ConvNeXt V2 Tiny} ajustada con la fotografía y la \dat{CBCT}
+(\sol{Deep Learning}) y de clasificadores \sol{SVM}, \sol{Random Forest},
+\sol{HistGradientBoosting} y \sol{KNN} entrenados con rasgos de la
+\dat{CBCT} (\sol{Machine Learning}). La mejor de las doce combinaciones
+se eligió por validación cruzada agrupada por paciente y se evaluó una
+sola vez en una prueba retenida de 43 pacientes, donde obtuvo un
+\textit{Macro-F1} de 0.842 (IC 95\,\%: 0.783--0.891), un AUC de 0.940 y
+una sensibilidad de 0.979 para detectar dientes con algún defecto, frente
+a 0.551 con solo la fotografía. La \dat{CBCT} resultó indispensable, y el
+ensamble superó a sus componentes de \sol{Machine Learning} y, por un
+margen menor, a los de \sol{Deep Learning}.
 \keywords{\prob{Fenestración} \and \prob{Dehiscencia} \and \dat{CBCT} \and
 \dat{Fotografía intraoral} \and \sol{Visión computacional} \and
 \sol{Deep Learning} \and \sol{Machine Learning}}
@@ -140,134 +156,149 @@ defectos solo a partir de fotografías, con un AUC de 0.76 y sin distinguir
 entre ellos \cite{liu2025fdtooth}.
 
 % P4. Propósito del trabajo
-En este contexto, el presente trabajo propone el diseño de un sistema de
+Este trabajo propone el diseño de un sistema de
 \sol{visión computacional} para el pre-diagnóstico de \prob{fenestración y
 dehiscencia ósea alveolar} a partir de \dat{fotografías intraorales y
-tomografías CBCT}. Para ello, se comparan sobre \dat{FDTooth} tres
-metodologías: rasgos diseñados a mano con \sol{Machine Learning}, ajuste
-fino de una \sol{red convolucional preentrenada} y representaciones de un
-\sol{modelo fundacional} con clasificadores de \sol{Machine Learning}, con
-la \dat{fotografía}, la \dat{CBCT} y su \dat{fusión} como entradas, y con
-una prueba retenida por paciente que se evalúa una sola vez.
+tomografías CBCT}. Sobre \dat{FDTooth} se construyen
+\sol{ensambles híbridos} que combinan una \sol{red convolucional
+preentrenada} ajustada con la \dat{fotografía} y la \dat{CBCT}
+(\sol{Deep Learning}) con clasificadores de \sol{Machine Learning}
+alimentados con rasgos diseñados de la \dat{CBCT}, y se evalúan con una
+prueba retenida por paciente que se usa una sola vez. Hasta donde se
+conoce, el único trabajo con \dat{fotografías intraorales} pareadas con
+\dat{CBCT} para estos defectos \cite{liu2025fdtooth} usó solo la
+fotografía y en una tarea binaria, y no se ha evaluado la \sol{fusión} de
+ambas modalidades ni un \sol{ensamble híbrido} de \sol{Deep Learning} y
+\sol{Machine Learning} para distinguir por diente entre normal,
+\prob{fenestración} y \prob{dehiscencia}, vacío que aborda el presente
+trabajo.
 
 % ---------------------------------------------------------------------
 \section{Trabajos Relacionados}
-% Subsecciones "[Técnica] para [problema]", una por cada metodología del
-% trabajo (M1, M2, M3). Cada una es un párrafo: contexto -> Autor et al. [n]
-% + técnica + datos + mejor métrica + hallazgo, enlazados con conectores, y
-% una oración final de síntesis propia. Criterio: 2021+ y revistas Q1.
+% Guía Related Works_v5: subsecciones "[Técnica] para [problema]"; cada una
+% es un párrafo: preámbulo -> Autor et al. [n] + algoritmos IA (\sol) + datos
+% y problema (\prob) + resultados (\res) + hallazgo (\hal) -> Del mismo modo,
+% [autor] -> Asimismo, [autor] -> ... -> Finalmente, [autor]. (punto final,
+% sin oración de síntesis). Criterio: 2021+ y revistas Q1.
 
 \subsection{\sol{Machine Learning} con rasgos diseñados a mano para el
 diagnóstico de \prob{lesiones óseas dentales}}
 Los clasificadores de \sol{Machine Learning} alimentados con rasgos
 cuantitativos de la imagen, como los radiómicos, de textura y de color, han
-sido ampliamente estudiados para el diagnóstico de \prob{lesiones de los
+sido estudiados para diagnosticar \prob{lesiones de los
 maxilares} en \dat{CBCT}. Song et al. \cite{song2024radiomics} extrajeron
 348 rasgos radiómicos de las \dat{CBCT} de 326 pacientes para diferenciar
 \prob{ameloblastoma y queratoquiste odontogénico} con seis algoritmos, y
-\sol{XGBoost} alcanzó una exactitud de 0.843, un F1 de 0.841 y un AUC de
-0.872, con un desempeño superior al de los radiólogos. \con{Del mismo
-modo}, Sha et al. \cite{sha2025radiomics} integraron seis rasgos
-radiómicos de las \dat{CBCT} de 300 pacientes en un clasificador por
-votación suave que combina \sol{Random Forest, SVM y regresión logística},
-y obtuvieron en el conjunto de prueba valores de AUC de 0.781 a 0.849 y una
-exactitud de 0.711 al distinguir tres tipos de \prob{lesiones quísticas}.
-\con{Asimismo}, centrándose en pacientes con \prob{periodontitis}, Zhang et
-al. \cite{zhang2026radiomic} emplearon 206 rasgos radiómicos de
-\dat{CBCT}, y el modelo \sol{Random Forest} logró un AUC de 0.710 para
-detectar aterosclerosis carotídea concomitante. \con{Por otra parte},
+\sol{XGBoost} alcanzó el mejor desempeño (\res{exactitud: 0.843; F1:
+0.841; AUC: 0.872}), \hal{superando el diagnóstico de los radiólogos}.
+\con{Del mismo modo}, Sha et al. \cite{sha2025radiomics} integraron seis
+rasgos radiómicos de las \dat{CBCT} de 300 pacientes en un clasificador
+por votación suave que combina \sol{Random Forest, SVM y regresión
+logística}, y obtuvieron en el conjunto de prueba \res{valores de AUC de
+0.781 a 0.849 y una exactitud de 0.711}, \hal{distinguiendo tres tipos de
+lesiones quísticas con solo seis rasgos}. \con{Asimismo}, centrándose en
+pacientes con \prob{periodontitis}, Zhang et al. \cite{zhang2026radiomic}
+emplearon 206 rasgos radiómicos de \dat{CBCT}, y el modelo \sol{Random
+Forest} logró un \res{AUC de 0.710}, \hal{al detectar la aterosclerosis
+carotídea concomitante a partir de la tomografía}. \con{Finalmente},
 Rashid y Dudley \cite{rashid2026cielab} transformaron mediciones de color
 \dat{CIELAB} de 300 dientes extraídos en rasgos diseñados para clasificar
-la severidad de la \prob{caries oclusal}, y observaron que los modelos
-basados en árboles (\sol{Random Forest, XGBoost y CatBoost}) rindieron por
-debajo de las redes neuronales, que alcanzaron una exactitud balanceada de
-0.89, y que apenas mejoraban con más datos de entrenamiento. En conjunto,
-estos trabajos muestran que los rasgos diseñados a mano son interpretables
-y eficaces con muestras moderadas, pero ninguno los aplicó a la
-\prob{fenestración y dehiscencia} ni a \dat{fotografías intraorales}.
+la severidad de la \prob{caries oclusal} con \sol{Random Forest, XGBoost,
+CatBoost y redes neuronales}, y estas últimas alcanzaron una \res{exactitud
+balanceada de 0.89}, \hal{mientras que los modelos basados en árboles
+rindieron por debajo y apenas mejoraban con más
+datos de entrenamiento}.
 
 \subsection{\sol{Deep Learning} para la evaluación del \prob{hueso
 alveolar} en \dat{CBCT y fotografías intraorales}}
-Conscientes de las limitaciones de los rasgos diseñados a mano, trabajos
+Ante las limitaciones de los rasgos diseñados a mano, trabajos
 recientes han aplicado \sol{Deep Learning} a la evaluación del
 \prob{soporte óseo periodontal}. Tichy et al.
 \cite{tichy2026periodontology} revisaron 29 estudios de \sol{Deep
 Learning} para el diagnóstico de \prob{periodontitis} y reportaron
-exactitudes de 81 a 99\,\% en radiografías panorámicas y de 78\,\% en
-\dat{CBCT}, así como un AUROC de 0.93 en el cribado con \dat{fotografías},
-aunque advirtieron que la mayoría utilizó datos de un solo centro.
-\con{Del mismo modo}, Yang et al. \cite{yang2026horizontal} entrenaron una
+\res{exactitudes de 81 a 99\,\% en radiografías panorámicas, de 78\,\% en
+CBCT y un AUROC de 0.93 en el cribado con fotografías}, \hal{advirtiendo
+que la mayoría de los estudios utilizó datos de un solo centro}. \con{Del
+mismo modo}, Yang et al. \cite{yang2026horizontal} entrenaron una
 \sol{3D-ResNet} con 505 \dat{CBCT} para clasificar la \prob{pérdida ósea
-horizontal} de los primeros molares inferiores y alcanzaron una exactitud
-global de 0.829, comparable a la de los odontólogos (0.820).
+horizontal} de los primeros molares inferiores y alcanzaron una
+\res{exactitud global de 0.829}, \hal{comparable a la de los odontólogos}.
 \con{Asimismo}, Palkovics et al. \cite{palkovics2026segmentation}
 utilizaron una \sol{SegResNet} para segmentar en \dat{CBCT} los
-\prob{defectos periodontales infraóseos} mandibulares, con mediciones
-lineales y volumétricas confiables frente a la segmentación
-semiautomática, mientras que Xu et al. \cite{xu2026swinunetr} entrenaron
-un \sol{Swin UNETR} con 10\,752 cortes sagitales de \dat{CBCT} para medir
-y detectar la \prob{fenestración y dehiscencia}. \con{Por otra parte}, en
-el caso de las \dat{fotografías intraorales}, Mao et al.
-\cite{mao2025photographs} analizaron 26 estudios de detección de
-\prob{enfermedad periodontal} y hallaron exactitudes de clasificación de
-0.46 a 1.00, con solo 9 estudios que usaron más de una vista. \con{De
-igual manera}, Li et al. \cite{li2026transverse} compararon seis
-\sol{redes convolucionales} entrenadas con \dat{fotografías intraorales
-frontales} de 826 pacientes, usando como referencia mediciones derivadas
-de \dat{CBCT}, y \sol{ResNet-18} alcanzó una exactitud de 90.62\,\% en un
-conjunto de prueba externo para detectar la \prob{deficiencia transversal
-maxilar}. Estos resultados confirman que un modelo basado en fotografías
-puede aprender de etiquetas obtenidas por \dat{CBCT}, aunque el desempeño
-varía según la tarea y la vista utilizada.
+\prob{defectos periodontales infraóseos} mandibulares, \hal{y obtuvieron
+mediciones lineales y volumétricas confiables frente a la segmentación
+semiautomática}. \con{De igual manera}, Xu et al. \cite{xu2026swinunetr}
+entrenaron un \sol{Swin UNETR} con 10\,752 cortes sagitales de \dat{CBCT}
+para medir y detectar la \prob{fenestración y dehiscencia}, con
+\res{exactitudes de 0.82 a 0.95 a nivel de diente}, \hal{lo que indica
+que ambos defectos pueden detectarse de forma automática en la
+tomografía}. \con{Por otra parte}, en el caso de las \dat{fotografías
+intraorales}, Mao et al. \cite{mao2025photographs} analizaron 26 estudios
+de detección de \prob{enfermedad periodontal} con \sol{Deep Learning} y
+hallaron \res{exactitudes de clasificación de 0.46 a 1.00}, \hal{con solo
+9 estudios que usaron más de una vista}. \con{Finalmente}, Li et al.
+\cite{li2026transverse} compararon seis \sol{redes convolucionales}
+entrenadas con \dat{fotografías intraorales frontales} de 826 pacientes,
+usando como referencia mediciones derivadas de \dat{CBCT}, y
+\sol{ResNet-18} alcanzó una \res{exactitud de 90.62\,\%} en un conjunto de
+prueba externo para detectar la \prob{deficiencia transversal maxilar},
+\hal{de modo que un modelo basado en fotografías puede aprender de
+etiquetas obtenidas por tomografía}.
 
 \subsection{\sol{Modelos fundacionales y fusión multimodal} en el
 \prob{diagnóstico odontológico}}
 Ante la escasez de datos etiquetados, los \sol{modelos fundacionales}
-preentrenados de forma autosupervisada y la \sol{fusión multimodal} se
-perfilan como alternativas al entrenamiento supervisado desde cero. Hu et
+preentrenados de forma autosupervisada y la \sol{fusión multimodal}
+ofrecen alternativas al entrenamiento supervisado desde cero. Hu et
 al. \cite{hu2025selfsupervised} adaptaron \sol{DINOv2} mediante
 aprendizaje autosupervisado específico del dominio para segmentar
-\dat{radiografías periapicales} con pocas anotaciones, y lograron un Dice
-de 74.77\,\% frente a 33.53--41.55\,\% de U-Net y DeepLabV3+, superando
-también a MAE, MoCo v3 y BEiT v3. \con{Del mismo modo}, Li et al.
-\cite{li2025hcnet} preentrenaron y ajustaron el modelo \sol{HC-Net+} con
-10\,881 \dat{ortopantomografías} para detectar \prob{periodontitis} en
-estadios II a IV, superaron a los periodoncistas (AUROC de 94.2\,\% frente
-a 85.6\,\%) y mantuvieron una exactitud superior a 92.4\,\% en cuatro
-centros. \con{Asimismo}, Feng et al. \cite{feng2026multimodal} revisaron
-la \sol{fusión de datos multimodales} en ortodoncia y concluyeron que
-integrar modalidades compensa las limitaciones de resolución y de
-especificidad tisular que presenta cada una por separado. \con{Por otra
-parte}, Chen et al. \cite{chen2026surveillance} señalaron que los modelos
-multimodales permiten integrar imágenes y datos clínicos en la vigilancia
-de la salud bucal. Sin embargo, el único trabajo que aborda la
-\prob{fenestración y dehiscencia} con \dat{fotografías intraorales}
-pareadas con \dat{CBCT}, el de Liu et al. \cite{liu2025fdtooth}, empleó un
-ensamble de \sol{redes convolucionales} supervisadas solo sobre la
-fotografía y en una tarea binaria. Hasta donde se conoce, no se ha
-evaluado un \sol{modelo fundacional} ni la \sol{fusión} de ambas
-modalidades para distinguir por diente entre normal, \prob{fenestración} y
-\prob{dehiscencia}, vacío que aborda el presente trabajo.
+\dat{radiografías periapicales} con pocas anotaciones, y lograron un
+\res{Dice de 74.77\,\% frente a 33.53--41.55\,\% de U-Net y DeepLabV3+},
+\hal{por encima también de MAE, MoCo v3 y BEiT v3}. \con{Del mismo modo}, Li
+et al. \cite{li2025hcnet} preentrenaron y ajustaron el modelo
+\sol{HC-Net+} con 10\,881 \dat{ortopantomografías} para detectar
+\prob{periodontitis} en estadios II a IV y obtuvieron un \res{AUROC de
+94.2\,\% frente a 85.6\,\% de los periodoncistas}, \hal{y mantuvo una
+exactitud superior al 92.4\,\% en cuatro centros}. \con{Asimismo},
+Feng et al. \cite{feng2026multimodal} revisaron la \sol{fusión de datos
+multimodales} en ortodoncia, \hal{y concluyeron que integrar modalidades
+compensa las limitaciones de resolución y de especificidad tisular que
+presenta cada una por separado}. \con{Finalmente}, Chen et al.
+\cite{chen2026surveillance} analizaron el uso de \sol{modelos
+multimodales} en la vigilancia de la \prob{salud bucal}, \hal{señalando
+que permiten integrar imágenes y datos clínicos en un mismo análisis}.
 
 % ---------------------------------------------------------------------
+\clearpage
 \section{Metodología}
-% Una subsección por bloque de la figura (img/metodologia.png). Tres
-% metodologías comparadas: M1 (gris) rasgos diseñados a mano + ML;
-% M2 (azul) ajuste fino de ConvNeXt V2 Tiny; M3 (verde) DINOv2 ViT-B/14 + ML.
-La Fig.~\ref{fig:metodologia} resume la metodología propuesta.
+% Una subsección por bloque de la figura (img/metodologia.png): 1) obtención
+% del dataset, 2) preprocesamiento, 3) ensambles híbridos (Deep Learning +
+% Machine Learning), 4) evaluación.
+La metodología se basó en los antecedentes revisados: el dataset y la
+referencia con solo \dat{fotografías} de \cite{liu2025fdtooth}, la
+región de interés por diente en cortes de la \dat{CBCT}
+\cite{xu2026swinunetr,wasserthal2023totalsegmentator}, los rasgos de la
+\dat{CBCT} con varios clasificadores y su combinación por votación suave
+\cite{song2024radiomics,sha2025radiomics}, y el ajuste fino de redes
+preentrenadas con \dat{fotografías} y etiquetas obtenidas de la tomografía
+\cite{li2026transverse,woo2023convnextv2}. La unión de ambos tipos de
+modelo en un \sol{ensamble híbrido} es propia de este trabajo. La
+Fig.~\ref{fig:metodologia} resume la metodología propuesta, organizada en
+cuatro fases.
 
-\begin{figure}[!htbp]
+\begin{figure}[!h]
 \centering
 \includegraphics[width=\textwidth]{metodologia.png}
 \caption{Metodología.}
 \label{fig:metodologia}
 \end{figure}
 
-\subsection{Datos y control de calidad}
+\subsection{Obtención del dataset}
 Se utilizó el dataset público \dat{FDTooth} \cite{liu2025fdtooth},
 recolectado en la Facultad de Odontología de la Universidad de Hong Kong:
 241 pacientes de 9 a 55 años, cada uno con una \dat{fotografía intraoral
-frontal} de $5760 \times 3840$ píxeles y una \dat{CBCT} con vóxeles de
+frontal} de alta resolución, en su mayoría de $5760 \times 3840$ píxeles,
+y una \dat{CBCT} con vóxeles de
 0.15 a 0.18 mm. Cada uno de los 12 dientes anteriores está etiquetado como
 normal (N), \prob{fenestración} (F) o \prob{dehiscencia} (D) a partir de
 la lectura de la \dat{CBCT} por dos odontólogos, con una concordancia
@@ -275,197 +306,504 @@ $\kappa > 0.9$ \cite{liu2025fdtooth}. Tras verificar la integridad de los
 487 archivos con sumas SHA256 y contrastar las etiquetas del archivo CSV
 con las del archivo JSON, se excluyeron 24 pacientes: 23 por discordancia
 entre ambas fuentes y uno por coordenadas incompatibles con la imagen. La
-cohorte quedó conformada por 217 pacientes y 2604 dientes.
+cohorte incluyó 217 pacientes y 2604 dientes.
 
 \subsection{Preprocesamiento}
-En la \dat{fotografía intraoral}, cada diente se recortó a partir de su
-caja delimitadora ampliada hacia la encía, se llevó a una orientación
-canónica, se redimensionó a 768 píxeles en su lado largo y se normalizó su
-color con \sol{Gray-world} y \sol{CLAHE}. \con{Asimismo}, la \dat{CBCT} se
-convirtió a valores tipo unidades Hounsfield (HU) y se segmentó con
-\sol{TotalSegmentator} \cite{wasserthal2023totalsegmentator}, que
-identificó 2600 de los 2604 dientes; de cada uno se extrajo una región de
-interés (ROI) 3D de $14 \times 10 \times 32$ mm alineada con su eje
-longitudinal y remuestreada a vóxeles de 0.2 mm. La cohorte se particionó
-por paciente en un conjunto de desarrollo de 174 pacientes y 2088 dientes
-(938 N, 663 F y 487 D) y una prueba retenida de 43 pacientes y 516 dientes
-(226 N, 169 F y 121 D).
+La Tabla~\ref{tab:preprocesamiento} resume las seis actividades de esta
+fase, que son las del segundo bloque de la Fig.~\ref{fig:metodologia}:
+tres para la \dat{fotografía intraoral} y tres para la \dat{CBCT}. Cada
+una se explica a continuación.
 
-\subsection{Extracción de características}
-En la M1, la \dat{fotografía} se describe con el histograma de gradientes
-orientados (\sol{HOG}) reducido por análisis de componentes principales,
-patrones binarios locales (\sol{LBP}) y estadísticas de color \sol{LAB}
-del diente y de la encía. En la \dat{CBCT}, se mide el perfil de
-\prob{grosor óseo vestibular} a lo largo de la raíz con umbrales de 400,
-700 y 1000 HU, del que se derivan la altura de la cresta, las zonas sin
-hueso y el grosor medio; estos rasgos reflejan la diferencia entre una
-\prob{dehiscencia}, que compromete el margen óseo, y una
-\prob{fenestración}, que deja intacta la cresta. El vector se completa con
-la longitud y el volumen del diente y su posición en la arcada.
+\begin{table}[!h]
+\centering
+\caption{Actividades del preprocesamiento.}
+\label{tab:preprocesamiento}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\setlength{\aboverulesep}{0pt}
+\setlength{\belowrulesep}{0pt}
+\renewcommand{\arraystretch}{1.15}
+\newcommand{\tarea}{\par\hangindent=0.8em\hangafter=1\noindent\makebox[0.8em][l]{\textbullet}}
+\begin{tabular}{>{\raggedright\arraybackslash}p{2.2cm}|>{\raggedright\arraybackslash}p{3.7cm}|>{\raggedright\arraybackslash}p{5.6cm}}
+\toprule
+\textbf{Actividad} & \textbf{Descripción} & \textbf{Tareas} \\
+\midrule
+\multicolumn{3}{l}{\textit{Fotografía intraoral}} \\ \hline
+Recorte por diente y encía & Aísla cada diente junto con la encía que
+cubre su raíz. & \tarea Asignar cada caja delimitadora a su diente.
+\tarea Ampliarla 30\,\% a los lados, 60\,\% hacia apical y 20\,\% hacia
+coronal. \\ \hline
+Orientación canónica & Deja todos los dientes con el ápice arriba y la
+cara mesial a la derecha. & \tarea Voltear en vertical los dientes
+inferiores.
+\tarea Voltear en horizontal los del lado izquierdo. \\ \hline
+Redimensiona\-miento & Unifica el tamaño de los recortes sin
+deformarlos. & \tarea Escalar a 768 píxeles en el lado largo.
+\tarea Conservar el color original. \\
+\midrule
+\multicolumn{3}{l}{\textit{CBCT}} \\ \hline
+Estandariza\-ción del volumen & Lleva las tomografías de ambos equipos a
+la misma escala de intensidad y de vóxel. & \tarea Ordenar los cortes
+DICOM por su posición.
+\tarea Convertir a valores tipo HU con la Ec.~(\ref{eq:hu}).
+\tarea Remuestrear a 0.5 mm (volumen completo) y a 0.2 mm (región
+anterior). \\ \hline
+Segmentación dental & Ubica y numera cada diente en la tomografía. &
+\tarea Aplicar \textit{TotalSegmentator} al volumen de 0.5 mm.
+\tarea Conservar el mayor componente conectado de cada diente. \\ \hline
+Extracción de la ROI 3D & Obtiene una región comparable entre dientes,
+alineada con su eje largo. & \tarea Calcular el eje largo por
+componentes principales.
+\tarea Orientar los otros ejes hacia vestibular y distal.
+\tarea Muestrear $14 \times 10 \times 32$ mm con vóxeles de 0.2 mm. \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-\subsection{Modelado y clasificación}
-Las tres metodologías producen la misma salida por diente: N, F o D. En
-la M1, los rasgos alimentan \sol{SVM} con kernel RBF, \sol{Random Forest},
-\sol{HistGradientBoosting} y \sol{KNN}. En la M2, se ajusta de extremo a
-extremo \sol{ConvNeXt V2 Tiny} \cite{woo2023convnextv2}, preentrenada en
-ImageNet-22k, con la \dat{fotografía}, una representación 2.5D de la ROI
-de la \dat{CBCT} o la \dat{fusión} de ambas en una arquitectura de dos
-ramas; el entrenamiento usa pérdida ponderada por clase, aumento de datos
-y aumento en inferencia (TTA), y en la prueba se promedian las
-probabilidades de tres semillas. \con{Por otra parte}, en la M3 el modelo
-fundacional \sol{DINOv2 ViT-B/14} \cite{oquab2023dinov2}, ya aplicado a
-imágenes dentales \cite{hu2025selfsupervised}, se usa como extractor
-congelado, y sus representaciones se reducen por análisis de componentes
-principales y se clasifican con \sol{regresión logística} o \sol{SVM}. Por
-último, entre quince variantes de ensamble evaluadas en desarrollo
-(promedio, \textit{stacking}, contexto del paciente y umbrales), la mejor
-fue el promedio de probabilidades de M2 con \dat{fusión}, M2 con
-\dat{CBCT} y M1 con \dat{CBCT}.
+\textbf{Recorte por diente y encía.} Las anotaciones de \dat{FDTooth}
+incluyen la caja delimitadora de los 12 dientes, pero no su número
+\cite{liu2025fdtooth}. Por ello, cada caja se asignó a su diente según su
+posición en la foto: las seis superiores y las seis inferiores se
+ordenaron de izquierda a derecha. Luego la caja se amplió para incluir
+la encía; el margen hacia apical es el mayor porque la recesión gingival
+asociada a estos defectos \cite{liu2025fdtooth} se observa en la encía
+que cubre la raíz.
+
+\textbf{Orientación canónica.} Los dientes inferiores se voltearon en
+vertical y los del lado izquierdo del paciente, en horizontal. Así, todos
+los recortes quedan con el ápice arriba y la cara mesial a la derecha, y
+la red no necesita aprender la misma anatomía en cuatro orientaciones.
+Los volteos, que en otros trabajos con \dat{fotografías intraorales} se
+usan como aumento de datos \cite{mao2025photographs}, aquí se aplican de
+forma fija para normalizar la orientación.
+
+\textbf{Redimensionamiento.} Cada recorte se redimensionó a 768 píxeles
+en su lado largo, manteniendo su proporción, para que todos tengan un
+tamaño similar sin deformar el diente; el redimensionamiento es un paso
+habitual en los modelos de \sol{Deep Learning} con \dat{fotografías
+intraorales} \cite{mao2025photographs}. No se normalizó el color: los
+modelos usan el recorte con su color original.
+
+\textbf{Estandarización del volumen.} Los cortes DICOM de cada
+\dat{CBCT} se ordenaron por su posición y sus intensidades se convirtieron
+a valores tipo unidades Hounsfield (HU), que en la \dat{CBCT} son
+aproximados, con los parámetros de reescalado del archivo:
+\begin{equation}
+\mathrm{HU} = m \cdot v + b
+\label{eq:hu}
+\end{equation}
+donde $v$ es el valor almacenado del vóxel, $m$ la pendiente
+(\textit{RescaleSlope}) y $b$ la intersección (\textit{RescaleIntercept}).
+Como las tomografías provienen de equipos con vóxeles de 0.15 y 0.18 mm
+\cite{liu2025fdtooth}, se remuestrearon por interpolación lineal a 0.5 mm
+en el volumen completo, que es la entrada de la segmentación, y a 0.2 mm
+en la región anterior, de donde se extraen las ROI.
+
+\textbf{Segmentación dental.} \sol{TotalSegmentator}
+\cite{wasserthal2023totalsegmentator}, una red basada en nnU-Net, se
+aplicó al volumen de 0.5 mm para ubicar cada diente con su número FDI.
+De cada máscara se conservó el mayor componente conectado, para descartar
+fragmentos sueltos. La segmentación identificó 2600 de los 2604 dientes;
+los cuatro restantes, todos del conjunto de desarrollo, quedaron sin ROI.
+
+\textbf{Extracción de la ROI 3D.} El eje largo de cada diente se obtuvo
+por análisis de componentes principales de su máscara; de los otros dos
+ejes, uno apunta hacia vestibular y el otro hacia distal, de modo que
+todos los dientes comparten la misma orientación. La región de interés
+(ROI) mide 14 mm en sentido vestíbulo-lingual, 10 mm en sentido
+mesio-distal y 32 mm a lo largo del eje, lo que cubre el canino completo,
+y se muestreó con vóxeles de 0.2 mm. Su corte vestíbulo-lingual central
+equivale a los cortes sagitales en que Xu et al. detectaron ambos
+defectos \cite{xu2026swinunetr}.
+
+\con{Finalmente}, la cohorte se particionó por paciente, para que los
+dientes de un mismo paciente no aparecieran en ambos conjuntos, en un
+conjunto de desarrollo de 174 pacientes y 2088 dientes (938 N, 663 F y
+487 D) y una prueba retenida de 43 pacientes y 516 dientes (226 N, 169 F
+y 121 D). La Fig.~\ref{fig:ejemplos} muestra el resultado del
+preprocesamiento para un diente de cada clase.
+
+\begin{figure}[!h]
+\centering
+\includegraphics[width=\textwidth]{ejemplos_clases.pdf}
+\caption{Resultado del preprocesamiento en un incisivo lateral inferior
+de cada clase: recorte de la \dat{fotografía intraoral} en orientación
+canónica y corte vestíbulo-lingual de la ROI de la \dat{CBCT} (V:
+vestibular; L: lingual). Datos de \dat{FDTooth} \cite{liu2025fdtooth}.}
+\label{fig:ejemplos}
+\end{figure}
+
+\subsection{Ensambles híbridos}
+El sistema combina, a nivel de decisión, modelos de \sol{Machine
+Learning} y de \sol{Deep Learning}: cada uno clasifica el diente por
+separado y luego se promedian sus probabilidades de N, F y D. La
+Tabla~\ref{tab:ensamble} resume las actividades de esta fase, que son las
+del tercer bloque de la Fig.~\ref{fig:metodologia}. Cada una se explica a
+continuación.
+
+\begin{table}[!h]
+\centering
+\caption{Actividades de los ensambles híbridos.}
+\label{tab:ensamble}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\setlength{\aboverulesep}{0pt}
+\setlength{\belowrulesep}{0pt}
+\renewcommand{\arraystretch}{1.1}
+\newcommand{\tarea}{\par\hangindent=0.8em\hangafter=1\noindent\makebox[0.8em][l]{\textbullet}}
+\begin{tabular}{>{\raggedright\arraybackslash}p{2.5cm}|>{\raggedright\arraybackslash}p{3.6cm}|>{\raggedright\arraybackslash}p{5.4cm}}
+\toprule
+\textbf{Actividad} & \textbf{Descripción} & \textbf{Tareas} \\
+\midrule
+\multicolumn{3}{l}{\textit{Machine Learning}} \\ \hline
+Rasgos de la CBCT & Mide el hueso vestibular de cada diente. &
+\tarea Perfil de grosor por mm de raíz.
+\tarea Cresta, zonas sin hueso y hueco más largo. \\ \hline
+Clasificadores & Estiman la probabilidad de N, F y D. &
+\tarea SVM, RF, HGB y KNN con los rasgos.
+\tarea Hiperparámetros por búsqueda interna. \\
+\midrule
+\multicolumn{3}{l}{\textit{Deep Learning}} \\ \hline
+ConvNeXt V2 (CBCT) & Clasifica el diente con su ROI. &
+\tarea Entrada 2.5D con tres cortes.
+\tarea Ajuste fino de la red preentrenada. \\ \hline
+ConvNeXt V2 (Foto+CBCT) & Fusiona la foto y la ROI en una red. &
+\tarea Una rama por modalidad.
+\tarea Cabeza común para ambas ramas. \\ \hline
+Ambas & Usa las dos redes a la vez. &
+\tarea Suma al ensamble las dos redes. \\
+\midrule
+\multicolumn{3}{l}{\textit{Ensamble}} \\ \hline
+Promedio de probabilidades & Combina cada red con cada clasificador. &
+\tarea Promedio con la Ec.~(\ref{eq:ensamble}).
+\tarea Doce ensambles en total. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Rasgos de la CBCT.} Sobre la ROI se midió, en cada milímetro a lo
+largo de la raíz, el grosor de la tabla ósea vestibular con tres umbrales
+de densidad (400, 700 y 1000 HU), ya que los valores de la \dat{CBCT} no
+están calibrados. De este perfil se derivan la altura de la cresta, la
+fracción de raíz sin hueso (menos de 0.3 mm) y el hueco óseo más largo
+con hueso por encima y por debajo, que es el patrón de la
+\prob{fenestración}; en cambio, la \prob{dehiscencia} compromete el margen
+óseo y desplaza la cresta hacia apical. El vector se completa con el perfil lingual,
+la longitud y el volumen del diente y su posición en la arcada. Este
+enfoque, en el que rasgos medidos en la \dat{CBCT} alimentan a varios
+clasificadores, sigue a Song et al. \cite{song2024radiomics}.
+
+\textbf{Clasificadores.} Los rasgos se imputaron con la mediana, se
+estandarizaron y alimentaron a cuatro clasificadores; SVM, RF y HGB
+usaron pesos de clase balanceados. \sol{SVM} \cite{cortes1995svm} separa las clases con un
+margen máximo en el espacio que define el kernel RBF:
+\begin{equation}
+K(\mathbf{x}, \mathbf{x}') = \exp\left(-\gamma \lVert \mathbf{x} -
+\mathbf{x}' \rVert^2\right)
+\label{eq:rbf}
+\end{equation}
+donde $\gamma$ controla el alcance de cada muestra y $C$ penaliza los
+errores; sus probabilidades se obtienen con el escalado de Platt.
+\sol{Random Forest} (RF) \cite{breiman2001rf} promedia las probabilidades
+de $T$ árboles entrenados con muestras y rasgos aleatorios:
+\begin{equation}
+P_{\mathrm{RF}}(c \mid \mathbf{x}) = \frac{1}{T} \sum_{t=1}^{T} p_t(c
+\mid \mathbf{x})
+\label{eq:rf}
+\end{equation}
+donde $p_t(c \mid \mathbf{x})$ es la proporción de la clase $c$ en la hoja
+del árbol $t$ a la que llega $\mathbf{x}$. \sol{HistGradientBoosting}
+(HGB) suma árboles pequeños que corrigen los errores de los anteriores
+\cite{friedman2001gbm}, y \sol{KNN} \cite{cover1967knn} asigna la clase
+de los $k$ vecinos más cercanos, ponderados por la inversa de su
+distancia. Los hiperparámetros se eligieron por \textit{Macro-F1} en una
+búsqueda interna agrupada por paciente; la
+Tabla~\ref{tab:hiperparametros} muestra el espacio de búsqueda y el valor
+elegido.
+
+\textbf{ConvNeXt V2 (CBCT).} \sol{ConvNeXt V2 Tiny}
+\cite{woo2023convnextv2}, preentrenada con autoencoders enmascarados y
+ajustada en ImageNet-22k e ImageNet-1k, se ajustó de extremo a extremo
+con una representación 2.5D de la ROI: tres cortes vestíbulo-linguales,
+el central y uno a 0.6 mm a cada lado, que ocupan los tres canales de la
+imagen. Cada corte se llevó a $[0, 1]$ con una ventana de $-300$ a
+$2200$ HU, se redimensionó a $320 \times 144$ píxeles y se normalizó con
+las estadísticas de ImageNet; los cuatro dientes sin ROI recibieron una
+entrada vacía.
+
+\textbf{ConvNeXt V2 (Foto+CBCT).} La red de \dat{fusión} tiene dos ramas
+ConvNeXt V2 Tiny, una para el recorte de la \dat{fotografía}, llevado a
+$384 \times 224$ píxeles, y otra para la ROI de la \dat{CBCT}; sus
+vectores se concatenan y pasan a una cabeza común con
+\textit{dropout} de 0.3 y una capa lineal de tres salidas. Como
+referencia, la misma red se ajustó con solo la \dat{fotografía}. Las dos
+redes se entrenaron con entropía cruzada ponderada por la inversa de la
+frecuencia de cada clase y aumento de datos (rotaciones, escalados,
+traslaciones y cambios de brillo y contraste, sin volteos, para no
+alterar la orientación canónica); la tasa de aprendizaje y las épocas se
+eligieron con una validación interna por paciente
+(Tabla~\ref{tab:hiperparametros}). En la prueba, cada red se reentrenó
+con todo el desarrollo, con tres semillas, y en la \dat{CBCT} se
+promediaron tres posiciones del corte central (TTA).
+
+\textbf{Ambas.} Esta configuración no entrena una red nueva: incluye en
+el ensamble las probabilidades de las dos redes anteriores.
+
+\textbf{Promedio de probabilidades.} Cada ensamble promedia con el mismo
+peso las probabilidades de los modelos que lo forman:
+\begin{equation}
+P_{\mathrm{ens}}(c \mid \mathbf{x}) = \frac{1}{|M|} \sum_{m \in M}
+P_m(c \mid \mathbf{x}), \qquad c \in \{N, F, D\}
+\label{eq:ensamble}
+\end{equation}
+donde $M$ reúne una red, o las dos en «Ambas», y un clasificador de
+\sol{Machine Learning}; así, en «Ambas + RF» cada modelo pesa 1/3. El
+diente se asigna a la clase de mayor probabilidad, como en la votación
+suave de Sha et al. \cite{sha2025radiomics}. Al cruzar las tres
+configuraciones de \sol{Deep Learning} con los cuatro clasificadores se
+obtienen doce \sol{ensambles híbridos}. En desarrollo también se probaron
+combinaciones con parámetros aprendidos (regresión logística sobre las
+probabilidades, contexto de los dientes del mismo paciente y umbrales por
+clase), pero ninguna superó al promedio simple.
 
 \subsection{Evaluación}
 En el conjunto de desarrollo se aplicó una validación cruzada anidada de
 cinco particiones agrupadas por paciente: una validación interna eligió
 los hiperparámetros y las predicciones fuera de partición permitieron
-comparar y elegir los modelos. Como referencia, se replicó en las mismas
-particiones el enfoque del antecedente basado solo en fotografías
-\cite{liu2025fdtooth}, cuya mejor variante (\sol{MobileNetV3-Small} con
-ajuste fino) obtuvo un \textit{Macro-F1} de 0.548. Los modelos elegidos se
-reentrenaron con todo el conjunto de desarrollo y se evaluaron una sola
-vez en la prueba retenida. Se reportan \textit{Macro-F1}, que es la
-métrica principal porque pondera por igual las tres clases, F1 ponderado,
-exactitud, precisión, sensibilidad, AUC-ROC uno contra el resto y la
-matriz de confusión. Los intervalos de confianza (IC) del 95\,\% y las
-diferencias entre modelos se estimaron por \textit{bootstrap} pareado de
-pacientes con 2000 remuestreos.
+comparar los doce ensambles y elegir el de mayor \textit{Macro-F1}. Como
+referencia, se replicó en las mismas particiones el enfoque del
+antecedente basado solo en fotografías \cite{liu2025fdtooth}, cuya mejor
+variante (\sol{MobileNetV3-Small} con ajuste fino) obtuvo un
+\textit{Macro-F1} de 0.548. Los modelos se reentrenaron con todo el
+conjunto de desarrollo y el ensamble elegido se evaluó una sola vez en la
+prueba retenida; la rejilla completa en la prueba se calculó después y es
+solo descriptiva. Se reportan \textit{Macro-F1}, que es la métrica
+principal porque pondera por igual las tres clases, F1 ponderado,
+exactitud, precisión y sensibilidad macro, AUC-ROC uno contra el resto, F1
+por clase y la matriz de confusión; \con{además}, al agrupar F y D como
+clase patológica, se reportan su sensibilidad y la especificidad. Los
+intervalos de confianza (IC) del 95\,\% y las diferencias entre modelos se
+estimaron por \textit{bootstrap} pareado de pacientes con 2000
+remuestreos.
 
 % ---------------------------------------------------------------------
 \section{Resultados}
 % Tablas: leyenda ENCIMA. Figuras: leyenda DEBAJO.
-% Fuente de todas las cifras: resultados_tesis.md (prueba retenida evaluada
-% una sola vez; desarrollo = predicciones fuera de partición).
+% Fuente de todas las cifras: resultados_tesis.md, sección 4 y 5 (prueba
+% retenida evaluada una sola vez; desarrollo = predicciones fuera de partición).
 
-\subsection{Comparación por metodología y modalidad}
-La Fig.~\ref{fig:macrof1} compara el \textit{Macro-F1} de cada metodología
-según la modalidad de entrada. Con solo la \dat{fotografía intraoral},
-ninguna metodología superó 0.535 en desarrollo ni 0.551 en la prueba,
-valores cercanos al del antecedente replicado (0.548). En cambio, con la
-\dat{CBCT} el desempeño subió a un rango de 0.584 a 0.836 en la prueba, y
-\sol{ConvNeXt V2 Tiny} (M2) obtuvo los mejores valores con la \dat{CBCT} y
-con la \dat{fusión} en ambos conjuntos, seguida por los rasgos diseñados
-(M1) y por \sol{DINOv2} congelado (M3). Los valores de la prueba fueron
-algo mayores que los de desarrollo, pero sus intervalos se solapan.
-
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=\textwidth]{macro_f1_metodologias.pdf}
-\caption{\textit{Macro-F1} por metodología y modalidad: (a) conjunto de
-desarrollo (validación cruzada agrupada por paciente, 174 pacientes);
-(b) prueba retenida (43 pacientes). Barras de error: IC 95\,\% por
-\textit{bootstrap} de pacientes. Línea discontinua: réplica del enfoque
-del antecedente con solo fotografías, medida en desarrollo.}
-\label{fig:macrof1}
-\end{figure}
-
-\subsection{Desempeño en la prueba retenida}
-La Tabla~\ref{tab:metricas} detalla el mejor modelo de cada metodología y
-el ensamble. El ensamble obtuvo en la prueba un \textit{Macro-F1} de 0.842
-(IC 95\,\%: 0.783--0.891), una exactitud de 0.845 y un AUC de 0.940, con
-valores de F1 equilibrados en las tres clases. \con{Asimismo}, su
-sensibilidad fue de 0.805, 0.876 y 0.876, y su precisión de 0.938, 0.796
-y 0.779 para N, F y D, respectivamente. M2 con \dat{fusión} y con
-\dat{CBCT} alcanzaron 0.836, M1 con \dat{CBCT} 0.786 y M3 con \dat{CBCT}
-solo 0.584.
+\subsection{Comparación de los ensambles híbridos}
+La Tabla~\ref{tab:ensambles} reúne los doce ensambles. En desarrollo,
+su \textit{Macro-F1} varió entre 0.778 y 0.810, y el mejor fue el que
+combina ambas configuraciones de \sol{ConvNeXt V2} con \sol{Random
+Forest}, que se eligió como sistema final. En la prueba retenida, este
+ensamble obtuvo también el mayor \textit{Macro-F1} (0.842; IC 95\,\%:
+0.783--0.891), con una exactitud de 0.845, un F1 ponderado de 0.846 y un
+AUC de 0.940. En ambos
+conjuntos, \sol{Random Forest} fue el mejor clasificador de \sol{Machine
+Learning} para cada configuración de \sol{Deep Learning}, y combinar las
+dos redes superó a usar una sola con cualquiera de los cuatro
+clasificadores. La sensibilidad para detectar dientes con algún defecto
+osciló entre 0.934 y 0.983 en los ensambles, y la especificidad, entre
+0.752 y 0.792.
 
 \begin{table}[!htbp]
 \centering
-\caption{Mejor modelo de cada metodología en la prueba retenida (43
-pacientes, 516 dientes). El AUC es el promedio macro uno contra el resto.}
-\label{tab:metricas}
-\setlength{\tabcolsep}{3.5pt}
-\begin{tabular}{lccccccc}
+\caption{Ensambles híbridos de \textit{Deep Learning} (ConvNeXt V2 Tiny)
+y \textit{Machine Learning} (rasgos de la CBCT). Desarrollo: 174
+pacientes; prueba retenida: 43 pacientes. Precisión, sensibilidad y AUC
+son promedios macro de N, F y D.}
+\label{tab:ensambles}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\setlength{\aboverulesep}{0pt}
+\setlength{\belowrulesep}{0pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{l|l|c|c|c|c|c|c|c|c}
 \toprule
-& \multicolumn{2}{c}{\textit{Macro-F1}} & & & \multicolumn{3}{c}{F1 por clase} \\
-\cmidrule(lr){2-3}\cmidrule(lr){6-8}
-Modelo & Desarrollo & Prueba [IC 95\,\%] & Exact. & AUC & N & F & D \\
+\multicolumn{2}{l|}{} & Desarrollo & \multicolumn{7}{c}{Prueba retenida} \\
+\cline{3-10}
+ConvNeXt V2 & ML & \textit{Macro-F1} & Exact. & Prec. & Sens. & \textit{Macro-F1} & AUC & Sens. F/D & Espec. \\
 \midrule
-\textbf{Ensamble} & 0.810 & \textbf{0.842} [0.783, 0.891] & 0.845 & 0.940 & 0.867 & 0.834 & 0.825 \\
-M2 Fusión & 0.796 & 0.836 [0.783, 0.881] & 0.839 & 0.941 & 0.870 & 0.807 & 0.830 \\
-M2 CBCT & 0.789 & 0.836 [0.785, 0.882] & 0.837 & 0.931 & 0.859 & 0.812 & 0.838 \\
-M1 RF CBCT & 0.741 & 0.786 [0.729, 0.834] & 0.791 & 0.911 & 0.813 & 0.785 & 0.761 \\
-M3 RL CBCT & 0.621 & 0.584 [0.518, 0.639] & 0.593 & 0.781 & 0.660 & 0.543 & 0.547 \\
+Foto+CBCT & SVM & 0.789 & 0.810 & 0.801 & 0.815 & 0.806 & 0.933 & 0.938 & 0.779 \\ \cline{2-10}
+          & RF  & 0.795 & 0.841 & 0.832 & 0.848 & 0.838 & 0.939 & 0.962 & 0.779 \\ \cline{2-10}
+          & HGB & 0.778 & 0.812 & 0.804 & 0.821 & 0.809 & 0.933 & 0.934 & 0.788 \\ \cline{2-10}
+          & KNN & 0.785 & 0.814 & 0.804 & 0.816 & 0.808 & 0.929 & 0.969 & 0.779 \\
+\midrule
+CBCT      & SVM & 0.784 & 0.818 & 0.811 & 0.822 & 0.814 & 0.933 & 0.972 & 0.761 \\ \cline{2-10}
+          & RF  & 0.793 & 0.841 & 0.836 & 0.849 & 0.839 & 0.936 & 0.976 & 0.757 \\ \cline{2-10}
+          & HGB & 0.781 & 0.822 & 0.814 & 0.830 & 0.820 & 0.932 & 0.945 & 0.774 \\ \cline{2-10}
+          & KNN & 0.784 & 0.828 & 0.823 & 0.833 & 0.825 & 0.929 & 0.983 & 0.752 \\
+\midrule
+Ambas     & SVM & 0.804 & 0.841 & 0.833 & 0.846 & 0.837 & 0.939 & 0.976 & 0.792 \\ \cline{2-10}
+          & \textbf{RF} & \textbf{0.810} & \textbf{0.845} & \textbf{0.838} & \textbf{0.852} & \textbf{0.842} & \textbf{0.940} & \textbf{0.979} & \textbf{0.765} \\ \cline{2-10}
+          & HGB & 0.805 & 0.831 & 0.824 & 0.840 & 0.830 & 0.941 & 0.959 & 0.783 \\ \cline{2-10}
+          & KNN & 0.804 & 0.835 & 0.829 & 0.840 & 0.832 & 0.937 & 0.983 & 0.757 \\
 \bottomrule
-\multicolumn{8}{l}{\scriptsize RF: \textit{Random Forest}. RL: regresión logística. Exact.: exactitud.}
 \end{tabular}
+\par\smallskip
+\parbox{\textwidth}{\scriptsize Ambas: las dos redes, cuyas probabilidades
+se promedian junto con las del clasificador de ML (Ec.~\ref{eq:ensamble}). RF: \textit{Random Forest}. HGB: \textit{HistGradientBoosting}.
+Exact.: exactitud. Sens. F/D y Espec.: sensibilidad y especificidad al
+agrupar F y D frente a N. En negrita, el ensamble elegido.}
+\par\vspace{4pt}
+\caption{Hiperparámetros de los componentes del ensamble híbrido: espacio
+de búsqueda y valor elegido con la búsqueda interna en desarrollo.}
+\label{tab:hiperparametros}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{l|l|l|l}
+\toprule
+Modelo & Hiperparámetro & Búsqueda & Valor \\
+\midrule
+\multicolumn{4}{l}{\textit{Deep Learning}} \\ \hline
+ConvNeXt V2 (Foto+CBCT) & lr cabeza & \{0.001, 0.0003\} & 0.001 \\ \cline{2-4}
+ & lr backbone & lr cabeza / 10 & 0.0001 \\ \cline{2-4}
+ & Épocas & $\leq 30$ & 7 \\ \hline
+ConvNeXt V2 (CBCT) & lr cabeza & \{0.001, 0.0003\} & 0.001 \\ \cline{2-4}
+ & lr backbone & lr cabeza / 10 & 0.0001 \\ \cline{2-4}
+ & Épocas & $\leq 30$ & 16 \\ \hline
+Común a las dos redes & Optimizador & -- & AdamW \\ \cline{2-4}
+ & Decaimiento de pesos & -- & 0.05 \\ \cline{2-4}
+ & Calendario & -- & OneCycle \\ \cline{2-4}
+ & Tamaño de lote & -- & 32 \\ \cline{2-4}
+ & Suavizado de etiquetas & -- & 0.1 \\ \cline{2-4}
+ & Semillas en la prueba & -- & 3 \\ \hline
+\textbf{Ambas} & Componentes & -- & las dos redes \\
+\midrule
+\multicolumn{4}{l}{\textit{Machine Learning}} \\ \hline
+SVM & Kernel & -- & RBF \\ \cline{2-4}
+ & $C$ & \{0.3, 1, 3, 10\} & 3 \\ \cline{2-4}
+ & $\gamma$ & \{scale, 0.003, 0.01\} & 0.003 \\ \hline
+\textbf{Random Forest} & Árboles & -- & 500 \\ \cline{2-4}
+ & max\_features & \{$\sqrt{p}$, 0.2\} & 0.2 \\ \cline{2-4}
+ & min\_samples\_leaf & \{1, 3, 8\} & 1 \\ \hline
+HGB & learning\_rate & \{0.03, 0.1\} & 0.1 \\ \cline{2-4}
+ & max\_leaf\_nodes & \{7, 15\} & 7 \\ \cline{2-4}
+ & Regularización L2 & \{0, 1\} & 1.0 \\ \hline
+KNN & $k$ & \{7, 15, 31\} & 31 \\ \cline{2-4}
+ & Ponderación & -- & distancia \\
+\midrule
+\multicolumn{4}{l}{\textit{Ensamble}} \\ \hline
+DL + ML & Combinación & -- & promedio, igual peso \\
+\bottomrule
+\end{tabular}
+\par\smallskip
+\parbox{\textwidth}{\scriptsize lr: tasa de aprendizaje. $p$: número de
+rasgos. Épocas: parada temprana con paciencia de 7. HGB: \textit{HistGradientBoosting}. En negrita, los componentes
+del ensamble elegido (Ambas + Random Forest), que pesan 1/3 cada uno.}
 \end{table}
 
-\subsection{Análisis de errores}
-La Fig.~\ref{fig:confusion} muestra las matrices de confusión en la prueba
-retenida. En el ensamble, el error más frecuente fue clasificar dientes
-normales como \prob{fenestración} (28 de 226), mientras que solo 7
-\prob{fenestraciones} y 5 \prob{dehiscencias} se clasificaron como
-normales. Frente a M1 con \dat{CBCT}, el ensamble redujo los errores
-D$\rightarrow$N de 15 a 5 y F$\rightarrow$D de 18 a 14; en cambio, M3
-reconoció solo el 53\,\% de las \prob{fenestraciones}. \con{Del mismo
-modo}, al agrupar ambos defectos en una sola clase patológica
-($P(F)+P(D)>0.5$), el ensamble alcanzó una sensibilidad de 0.979, una
-especificidad de 0.765, una exactitud de 0.886 y un AUC de 0.927.
+La Tabla~\ref{tab:hiperparametros} reúne los hiperparámetros de cada
+componente. Como el ensamble combina decisiones, cada red y cada
+clasificador se entrenó una sola vez y se reutilizó en todas las
+combinaciones.
 
-\begin{figure}[!htbp]
+\subsection{Aporte de cada componente}
+La Fig.~\ref{fig:componentes} compara el ensamble elegido con sus
+componentes. Con solo la \dat{fotografía intraoral}, \sol{ConvNeXt V2}
+obtuvo un \textit{Macro-F1} de 0.534 en desarrollo y de 0.551 en la
+prueba, valores cercanos al del antecedente replicado (0.548). En cambio,
+con la \dat{CBCT} el componente de \sol{Machine Learning} alcanzó 0.786 en
+la prueba y los de \sol{Deep Learning} 0.836, y el ensamble superó a todos
+en ambos conjuntos. Sus F1 por clase fueron equilibrados (0.867, 0.834 y
+0.825), con una sensibilidad de 0.805, 0.876 y 0.876 y una precisión de
+0.938, 0.796 y 0.779 para N, F y D, respectivamente. Los valores de la
+prueba superaron ligeramente a los de desarrollo, aunque sus intervalos se
+solapan.
+
+\begin{figure}[!t]
 \centering
-\includegraphics[width=\textwidth]{matrices_confusion_prueba.pdf}
-\caption{Matrices de confusión en la prueba retenida (filas: clase real;
-columnas: clase predicha). Cada celda indica el número de dientes y el
-porcentaje de su clase real.}
+\includegraphics[width=\textwidth]{macro_f1_componentes.pdf}
+\caption{\textit{Macro-F1} del ensamble híbrido elegido y de sus
+componentes en desarrollo (validación cruzada agrupada por paciente) y en
+la prueba retenida. ConvNeXt V2 con solo la fotografía se muestra como
+referencia. Barras de error: IC 95\,\% por \textit{bootstrap} de
+pacientes. Línea discontinua: réplica del enfoque del antecedente con solo
+fotografías, medida en desarrollo.}
+\label{fig:componentes}
+\end{figure}
+
+\subsection{Análisis de errores}
+La Fig.~\ref{fig:confusion} muestra la matriz de confusión del ensamble
+elegido en la prueba retenida. El error más frecuente fue clasificar
+dientes normales como \prob{fenestración} (28 de 226), mientras que solo
+7 \prob{fenestraciones} y 5 \prob{dehiscencias} se clasificaron como
+normales. En las matrices de sus componentes, que no se muestran, cada
+uno aportó aciertos distintos: \sol{ConvNeXt V2}
+con \dat{CBCT} reconoció 149 \prob{fenestraciones}, pero confundió 35
+dientes normales con esa clase; con \dat{fusión}, acertó más dientes
+normales (187) y \prob{dehiscencias} (110); y \sol{Random Forest} cometió
+15 errores D$\rightarrow$N. Al promediarlos, el ensamble conservó el
+reconocimiento de las \prob{fenestraciones} (148) y bajó a 28 los errores
+N$\rightarrow$F. \con{Del mismo modo}, al agrupar ambos defectos en una
+sola clase patológica ($P(F)+P(D)>0.5$), el ensamble alcanzó una
+sensibilidad de 0.979, una especificidad de 0.765, una exactitud de 0.886
+y un AUC de 0.927.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=0.5\textwidth]{matriz_confusion_ensamble.pdf}
+\caption{Matriz de confusión del ensamble híbrido elegido (ConvNeXt V2
+Foto+CBCT, ConvNeXt V2 CBCT y Random Forest) en la prueba retenida. Cada
+celda indica el número de dientes y el porcentaje de su clase real.}
 \label{fig:confusion}
 \end{figure}
 
 \subsection{Comparaciones estadísticas}
 Con el \textit{bootstrap} pareado, la \dat{CBCT} superó a la
-\dat{fotografía} dentro de M2 por +0.285 (IC 95\,\%: +0.231 a +0.345) en
-la prueba, y M2 con \dat{fusión} superó a M1 con \dat{CBCT} por +0.049
-(+0.013 a +0.090), al igual que M1 con \dat{CBCT} a M3 con \dat{CBCT} por
-+0.203 (+0.145 a +0.258); las tres diferencias fueron también
-significativas en desarrollo. En cambio, la \dat{fusión} no mejoró a la
-\dat{CBCT} sola en M2 ($-0.001$; $-0.022$ a +0.020), y la ventaja del
-ensamble sobre M2 con \dat{fusión}, significativa en desarrollo (+0.014;
-+0.002 a +0.025), no lo fue en la prueba (+0.006; $-0.014$ a +0.026).
+\dat{fotografía} en \sol{ConvNeXt V2} por +0.285 (IC 95\,\%: +0.231 a
++0.345) en la prueba, y el componente de \sol{Deep Learning} con
+\dat{fusión} superó al de \sol{Machine Learning} por +0.049 (+0.013 a
++0.090); ambas diferencias fueron también significativas en desarrollo.
+En cambio, la \dat{fusión} no mejoró a la \dat{CBCT} sola ($-0.001$;
+$-0.022$ a +0.020), y la ventaja del ensamble sobre \sol{ConvNeXt V2} con
+\dat{fusión}, significativa en desarrollo (+0.014; +0.002 a +0.025), no
+lo fue en la prueba (+0.006; $-0.014$ a +0.026).
 
 \subsection{Discusión}
 El principal hallazgo es que la \dat{CBCT} determina el desempeño: con
-solo la \dat{fotografía}, las tres metodologías quedaron en el nivel del
+solo la \dat{fotografía}, \sol{ConvNeXt V2} quedó en el nivel del
 antecedente \cite{liu2025fdtooth}, lo que indica que la fotografía muestra
 signos indirectos, como el contorno gingival, pero no basta para separar
 la \prob{fenestración} de la \prob{dehiscencia}; por ello, la
-\dat{fusión} tampoco superó a la \dat{CBCT} sola, y la complementariedad
-que describe la literatura \cite{feng2026multimodal} no se tradujo en una
-ganancia. \con{Asimismo}, el ajuste fino de \sol{ConvNeXt V2} superó a los
-rasgos diseñados, en línea con lo observado en otros problemas dentales
-\cite{rashid2026cielab}, mientras que \sol{DINOv2} congelado, a diferencia
-del adaptado al dominio dental \cite{hu2025selfsupervised}, no se ajustó a
-los cortes tomográficos. \con{Por otra parte}, la sensibilidad del
+\dat{fusión} dentro de la red tampoco superó a la \dat{CBCT} sola, y la
+complementariedad que describe la literatura \cite{feng2026multimodal} no
+se tradujo en una ganancia. En cambio, la combinación a nivel de decisión
+sí aportó: en los doce ensambles, promediar ambas configuraciones de
+\sol{ConvNeXt V2} superó a usar una sola, y \sol{Random Forest} fue el
+mejor complemento, en línea con la votación suave de clasificadores que
+emplearon Sha et al. \cite{sha2025radiomics}. \con{Asimismo}, el ajuste
+fino superó a los rasgos diseñados, como en otros problemas dentales
+\cite{rashid2026cielab}, pero los rasgos de la \dat{CBCT} corrigieron
+parte de los errores de la red. \con{Por otra parte}, la sensibilidad del
 ensamble (0.979) lo hace útil para el cribado, pues casi no omite dientes
-con defectos. Que la prueba supere ligeramente al desarrollo, con
-intervalos solapados, descarta un sobreajuste en la selección de modelos.
-Las limitaciones son el uso de un único dataset de una sola institución y
-el tamaño de la prueba (43 pacientes), que produce intervalos amplios.
+con defectos. La prueba superó ligeramente al desarrollo, con
+intervalos solapados, de modo que no hay indicios de sobreajuste en la
+selección del ensamble. Las limitaciones incluyen el uso de datos de una
+sola institución, el tamaño de la prueba (43 pacientes), que produce
+intervalos amplios, y que la ventaja del ensamble sobre su mejor
+componente no fue significativa en la prueba.
 
 % ---------------------------------------------------------------------
 \section{Conclusiones}
 Este trabajo diseñó un sistema de \sol{visión computacional} para el
 pre-diagnóstico por diente de \prob{fenestración y dehiscencia ósea
-alveolar} a partir de \dat{fotografías intraorales y tomografías CBCT}, y
-comparó tres metodologías sobre el dataset \dat{FDTooth}. En la prueba
-retenida, evaluada una sola vez, el ensamble del ajuste fino de
-\sol{ConvNeXt V2} y de los rasgos diseñados de la \dat{CBCT} alcanzó un
-\textit{Macro-F1} de 0.842, un AUC de 0.940 y una sensibilidad de 0.979
-para detectar dientes con defectos, frente a un máximo de 0.551 con solo
-la \dat{fotografía}. Los resultados muestran que la \dat{CBCT} es
-indispensable para separar ambos defectos, que el ajuste fino supera de
-forma significativa a los rasgos diseñados a mano y que un modelo
-fundacional congelado no se adapta bien a las imágenes tomográficas. Como
-trabajo futuro, se propone validar el sistema en datos de otras
-instituciones, adaptar \sol{DINOv2} al dominio de la \dat{CBCT} y explorar
-estrategias de fusión que aprovechen mejor la \dat{fotografía intraoral}.
+alveolar} a partir de \dat{fotografías intraorales y tomografías CBCT},
+basado en \sol{ensambles híbridos} de \sol{Deep Learning} y \sol{Machine
+Learning} sobre el dataset \dat{FDTooth}. En la prueba retenida, evaluada
+una sola vez, el ensamble de \sol{ConvNeXt V2} con \dat{fotografía y
+CBCT}, \sol{ConvNeXt V2} con \dat{CBCT} y \sol{Random Forest} con rasgos
+de la \dat{CBCT} alcanzó un \textit{Macro-F1} de 0.842, un AUC de 0.940 y
+una sensibilidad de 0.979 para detectar dientes con defectos, frente a
+0.551 con solo la \dat{fotografía}. En esta cohorte, la
+\dat{CBCT} fue indispensable para separar ambos defectos, el ajuste fino
+superó de forma significativa a los rasgos diseñados a mano y promediar
+ambos tipos de modelo dio el mejor desempeño, aunque con una ventaja
+pequeña sobre la mejor red. Como trabajo futuro, se propone
+validar el sistema en datos de otras instituciones, incorporar otras
+arquitecturas de \sol{Deep Learning} al ensamble y explorar estrategias de
+fusión que aprovechen mejor la \dat{fotografía intraoral}.
 
 % ---------------------------------------------------------------------
 \bibliographystyle{splncs04unsrt} % splncs04 numerado por orden de aparición

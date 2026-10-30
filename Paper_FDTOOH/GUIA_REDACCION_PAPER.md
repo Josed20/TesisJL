@@ -49,8 +49,8 @@ con las macros `\prob{}` (azul), `\sol{}` (rojo), `\dat{}` (verde) y `\con{}`
 (conector resaltado en amarillo).
 
 Aplicado a FDTooth: problema = *fenestración y dehiscencia ósea alveolar*;
-solución = *Deep Learning (ConvNeXt V2, DINOv2) y Machine Learning (SVM, RF, GB,
-KNN, LR)*; datos = *fotografía intraoral + CBCT*.
+solución = *ensambles híbridos de Deep Learning (ConvNeXt V2) y Machine Learning (SVM, RF, HGB,
+KNN)*; datos = *fotografía intraoral + CBCT*.
 
 ## 3. Introducción: estructura en embudo (Introducción_v3.pdf)
 
@@ -74,7 +74,24 @@ Las fuentes pueden ser artículos (con DOI) y páginas institucionales. Las
 páginas web se citan con `Accessed: <fecha>. [Online]. Available: <URL>`.
 Extensión de referencia: alrededor de 1 página y 9 referencias.
 
-## 4. Related Work / estado del arte (Related Works_v3 (1).pdf)
+## 4. Related Work / estado del arte (guía definitiva: Related Works_v5.pdf)
+
+**La v5 manda sobre la v3.** Esquema de cada subsección (un solo párrafo):
+
+1. **Preámbulo:** una oración general sobre la técnica aplicada al problema.
+2. **Primer trabajo:** Autor et al. [n] + **algoritmos IA** (`\sol{}`, rojo) +
+   datos y **problema** (`\prob{}`, azul) + **resultados** con métrica y valor
+   (`\res{}`, morado) + **hallazgo** (`\hal{}`, resaltado verde).
+3. **Siguientes trabajos** con conectores en este orden: *Del mismo modo* →
+   *Asimismo* → (*De igual manera* → *Por otra parte*) → **Finalmente**.
+4. **Cierre:** «Finalmente, [último autor]…» y **punto final**. No hay oración de
+   síntesis propia al final. El vacío de investigación va al final de la
+   Introducción.
+
+Dentro de `\hal{}` va solo texto plano (usa `soul`): nada de `\cite`, `\dat`, etc.
+
+Lo que sigue proviene de la v3 y sigue siendo válido salvo en lo que contradiga lo
+anterior:
 
 - Se organiza en **subsecciones temáticas**, cada una con el patrón
   "[Técnica] para [problema / dominio]". Ejemplos: "2.1 Métodos de Ensemble
@@ -133,6 +150,8 @@ Se cita para aportar evidencia que sostenga los argumentos.
 Se usa un diagrama con 4 bloques numerados: **1. Adquisición → 2.
 Preprocesamiento → 3. Extracción de características → 4. Modelado y
 clasificación**. Tiene ramas de color, una por metodología comparada
-(Metodología 1 gris, 2 azul, 3 verde), que llegan a la salida de clases. La
-figura de FDTooth (`img/metodologia.png`) ya sigue este formato:
-M1 = rasgos manuales + ML, M2 = ajuste fino, M3 = DINOv2 + ML.
+(Metodología 1 gris, 2 azul, 3 verde), que llegan a la salida de clases.
+FDTooth ya no compara metodologías. Su figura (`img/metodologia.png`, versión
+del 16/10/2026) tiene 4 bloques: 1. Obtención del dataset → 2.
+Preprocesamiento → 3. Ensambles híbridos (Deep Learning: ConvNeXt V2; Machine
+Learning: SVM, RF, HGB y KNN; promedio de probabilidades) → 4. Evaluación.

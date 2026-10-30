@@ -1,0 +1,61 @@
+{
+  "paper_title": "Diseño de un Sistema de Visión Computacional para el Pre-diagnóstico de Fenestración y Dehiscencia Ósea Alveolar a partir de Fotografías Intraorales y Tomografías CBCT",
+  "analysis_timestamp": "2026-10-21T16:29:24",
+  "note": "Candidatas sin verificar: confirmar cuartil Q1 (SJR), año >= 2021 y texto completo antes de citar, según CLAUDE.md.",
+  "missing_citations": [
+    {
+      "location": "Sección 2 (Trabajos Relacionados), técnica de ensambles",
+      "claim": "Ensambles de modelos en diagnóstico dental",
+      "suggested_citations": [
+        {
+          "title": "Multi-label dental disorder diagnosis based on MobileNetV2 and swin transformer using bagging ensemble classifier",
+          "authors": "por verificar",
+          "year": 2024,
+          "venue": "Scientific Reports",
+          "doi": "10.1038/s41598-024-73297-9",
+          "reason": "Único ensamble con DL en odontología hallado en Europe PMC (2021+)",
+          "search_query": "Europe PMC: ensemble AND deep learning AND machine learning AND dental"
+        }
+      ]
+    },
+    {
+      "location": "Sección 2.2, hueso alveolar anterior",
+      "claim": "Deep Learning sobre hueso alveolar anterior en CBCT",
+      "suggested_citations": [
+        {
+          "title": "Deep learning-assisted cone-beam computed tomography volumetric assessment of mandibular anterior alveolar...",
+          "authors": "por verificar",
+          "year": 2026,
+          "venue": "American Journal of Orthodontics and Dentofacial Orthopedics",
+          "doi": "10.1016/j.ajodo.2026.06.012",
+          "reason": "Misma región anatómica y contexto ortodóntico que FDTooth",
+          "search_query": "Europe PMC: alveolar bone AND deep learning AND cone-beam"
+        },
+        {
+          "title": "Convolutional neural network-based automated maxillary alveolar bone segmentation on cone-beam computed tomography",
+          "authors": "por verificar",
+          "year": 2023,
+          "venue": "Clinical Oral Implants Research",
+          "doi": "10.1111/clr.14063",
+          "reason": "Antecedente muy citado sobre hueso alveolar en CBCT",
+          "search_query": "paper_search.py --sources s2: ensemble convolutional neural network random forest cone beam computed tomography"
+        }
+      ]
+    },
+    {
+      "location": "Sección 4.5 (Discusión), defectos óseos",
+      "claim": "Deep Learning para clasificar defectos del reborde alveolar",
+      "suggested_citations": [
+        {
+          "title": "Deep learning for the identification of ridge deficiency around dental implants",
+          "authors": "por verificar",
+          "year": 2024,
+          "venue": "Clinical Implant Dentistry and Related Research",
+          "doi": "10.1111/cid.13301",
+          "reason": "Clasificación de defectos óseos alveolares con DL",
+          "search_query": "Europe PMC: fenestration OR dehiscence AND deep learning"
+        }
+      ]
+    }
+  ]
+}

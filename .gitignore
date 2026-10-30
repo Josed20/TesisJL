@@ -12,3 +12,6 @@
 *.run.xml
 *.synctex.gz
 *.toc
+
+# Estado local de herramientas
+.context/
