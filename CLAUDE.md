@@ -49,7 +49,7 @@ MiKTeX está instalado y tiene `llncs`, `biblatex-apa`, `newtx` y `titlesec`. Lo
 
 **Decisión del usuario (16/10/2026): la tesis tiene una sola metodología, los ensambles híbridos.** Ya no se comparan tres metodologías. No escribas M1, M2 ni M3 en los documentos, y no presentes DINOv2 (M3) como parte del trabajo: solo puede aparecer como antecedente en los Trabajos Relacionados. Los componentes se nombran así: «ConvNeXt V2 (Foto+CBCT)», «ConvNeXt V2 (CBCT)», «Ambas» (las dos redes juntas) y «RF (CBCT)». **El ensamble promedia con el mismo peso todas las probabilidades que lo forman** (código: `np.mean` sobre la lista de modelos en `auditoria/rejilla_dl_ml.py`): en «Ambas + RF» cada modelo pesa 1/3, no es un promedio anidado. Comprobado el 23/10/2026: el anidado daría 0.804/0.828, no 0.810/0.842.
 
-**Figura vigente (16/10/2026)**, 4 bloques. Cada bloque es una subsección de Metodología en el paper (3.1 a 3.4) y una fase en el plan (Fase 1 a 4), y da origen a un PE, un OE y una HE:
+**Figura vigente (16/10/2026)**, 4 bloques. Cada bloque es una subsección de Metodología en el paper (3.1 a 3.4) y una fase en el plan (Fase 1 a 4), y da origen a un PE, un OE y una HE. Desde el 06/11/2026, el paper usa la versión en inglés que entregó el usuario (`Paper_FDTOOH/img/metodologia_en.png`); el plan sigue con `metodologia.png` en español:
 
 1. **Obtención del dataset:** FDTooth, 241 pacientes. En el texto también se incluye el control de calidad: integridad SHA256 de 487 archivos y exclusión de 24 pacientes (23 por discordancia CSV–JSON y 1 por coordenadas incompatibles). Resultado: 217 pacientes y 2604 dientes.
 2. **Preprocesamiento:**
