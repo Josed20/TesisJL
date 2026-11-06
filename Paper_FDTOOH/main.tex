@@ -15,6 +15,7 @@
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{placeins}
+\usepackage{float}
 \usepackage{amsmath}
 \usepackage[hidelinks]{hyperref}
 \usepackage{xcolor}
@@ -62,7 +63,7 @@
 \title{Diseño de un Sistema de \sol{Visión Computacional} para el
 Pre-diagnóstico de \prob{Fenestración y Dehiscencia Ósea Alveolar} a partir
 de \dat{Fotografías Intraorales y Tomografías CBCT}}
-\titlerunning{Pre-diagnóstico de Fenestración y Dehiscencia}
+\titlerunning{\mbox{}} % plantilla ESAN: páginas impares solo con el número
 
 \author{José Cabrera-Ticlla\inst{1} \and Lucero Ayala-Mauricio\inst{1} \and
 Wilfredo Ticona\inst{1,2}}
@@ -441,7 +442,7 @@ Tabla~\ref{tab:ensamble} resume las actividades de esta fase, que son las
 del tercer bloque de la Fig.~\ref{fig:metodologia}. Cada una se explica a
 continuación.
 
-\begin{table}[!h]
+\begin{table}[H]
 \centering
 \caption{Actividades de los ensambles híbridos.}
 \label{tab:ensamble}
@@ -449,9 +450,9 @@ continuación.
 \setlength{\tabcolsep}{3pt}
 \setlength{\aboverulesep}{0pt}
 \setlength{\belowrulesep}{0pt}
-\renewcommand{\arraystretch}{1.1}
+\renewcommand{\arraystretch}{1.0}
 \newcommand{\tarea}{\par\hangindent=0.8em\hangafter=1\noindent\makebox[0.8em][l]{\textbullet}}
-\begin{tabular}{>{\raggedright\arraybackslash}p{2.5cm}|>{\raggedright\arraybackslash}p{3.6cm}|>{\raggedright\arraybackslash}p{5.4cm}}
+\begin{tabular}{>{\raggedright\arraybackslash}p{2.4cm}|>{\raggedright\arraybackslash}p{3.3cm}|>{\raggedright\arraybackslash}p{5.8cm}}
 \toprule
 \textbf{Actividad} & \textbf{Descripción} & \textbf{Tareas} \\
 \midrule
@@ -470,11 +471,11 @@ ConvNeXt V2 (CBCT) & Clasifica el diente con su ROI. &
 ConvNeXt V2 (Foto+CBCT) & Fusiona la foto y la ROI en una red. &
 \tarea Una rama por modalidad.
 \tarea Cabeza común para ambas ramas. \\ \hline
-Ambas & Usa las dos redes a la vez. &
-\tarea Suma al ensamble las dos redes. \\
+Ambas & Las dos redes: Foto+CBCT y CBCT. &
+\tarea Aporta al ensamble las probabilidades de las dos redes. \\
 \midrule
 \multicolumn{3}{l}{\textit{Ensamble}} \\ \hline
-Promedio de probabilidades & Combina cada red con cada clasificador. &
+Promedio de probabilidades & Une cada configuración de DL con cada ML. &
 \tarea Promedio con la Ec.~(\ref{eq:ensamble}).
 \tarea Doce ensambles en total. \\
 \bottomrule
@@ -518,8 +519,8 @@ del árbol $t$ a la que llega $\mathbf{x}$. \sol{HistGradientBoosting}
 de los $k$ vecinos más cercanos, ponderados por la inversa de su
 distancia. Los hiperparámetros se eligieron por \textit{Macro-F1} en una
 búsqueda interna agrupada por paciente; la
-Tabla~\ref{tab:hiperparametros} muestra el espacio de búsqueda y el valor
-elegido.
+Tabla~\ref{tab:hiperparametros} muestra los valores elegidos en cada
+ensamble y, en su nota, el espacio de búsqueda.
 
 \textbf{ConvNeXt V2 (CBCT).} \sol{ConvNeXt V2 Tiny}
 \cite{woo2023convnextv2}, preentrenada con autoencoders enmascarados y
@@ -607,7 +608,7 @@ clasificadores. La sensibilidad para detectar dientes con algún defecto
 osciló entre 0.934 y 0.983 en los ensambles, y la especificidad, entre
 0.752 y 0.792.
 
-\begin{table}[!htbp]
+\begin{table}[!t]
 \centering
 \caption{Ensambles híbridos de \textit{Deep Learning} (ConvNeXt V2 Tiny)
 y \textit{Machine Learning} (rasgos de la CBCT). Desarrollo: 174
@@ -636,8 +637,8 @@ CBCT      & SVM & 0.784 & 0.818 & 0.811 & 0.822 & 0.814 & 0.933 & 0.972 & 0.761 
           & KNN & 0.784 & 0.828 & 0.823 & 0.833 & 0.825 & 0.929 & 0.983 & 0.752 \\
 \midrule
 Ambas     & SVM & 0.804 & 0.841 & 0.833 & 0.846 & 0.837 & 0.939 & 0.976 & 0.792 \\ \cline{2-10}
-          & \textbf{RF} & \textbf{0.810} & \textbf{0.845} & \textbf{0.838} & \textbf{0.852} & \textbf{0.842} & \textbf{0.940} & \textbf{0.979} & \textbf{0.765} \\ \cline{2-10}
-          & HGB & 0.805 & 0.831 & 0.824 & 0.840 & 0.830 & 0.941 & 0.959 & 0.783 \\ \cline{2-10}
+(Foto+CBCT & \textbf{RF} & \textbf{0.810} & \textbf{0.845} & \textbf{0.838} & \textbf{0.852} & \textbf{0.842} & \textbf{0.940} & \textbf{0.979} & \textbf{0.765} \\ \cline{2-10}
+y CBCT)   & HGB & 0.805 & 0.831 & 0.824 & 0.840 & 0.830 & 0.941 & 0.959 & 0.783 \\ \cline{2-10}
           & KNN & 0.804 & 0.835 & 0.829 & 0.840 & 0.832 & 0.937 & 0.983 & 0.757 \\
 \bottomrule
 \end{tabular}
@@ -647,57 +648,53 @@ se promedian junto con las del clasificador de ML (Ec.~\ref{eq:ensamble}). RF: \
 Exact.: exactitud. Sens. F/D y Espec.: sensibilidad y especificidad al
 agrupar F y D frente a N. En negrita, el ensamble elegido.}
 \par\vspace{4pt}
-\caption{Hiperparámetros de los componentes del ensamble híbrido: espacio
-de búsqueda y valor elegido con la búsqueda interna en desarrollo.}
+\caption{Hiperparámetros de cada ensamble híbrido, elegidos con la
+búsqueda interna en desarrollo.}
 \label{tab:hiperparametros}
 \scriptsize
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{l|l|l|l}
+\setlength{\tabcolsep}{2pt}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{l|l|c|c|l|c}
 \toprule
-Modelo & Hiperparámetro & Búsqueda & Valor \\
+\multicolumn{2}{l|}{} & \multicolumn{2}{c|}{ConvNeXt V2} & & \\
+\cline{3-4}
+ConvNeXt V2 & ML & lr & Épocas & Hiperparámetros del ML & Peso \\
 \midrule
-\multicolumn{4}{l}{\textit{Deep Learning}} \\ \hline
-ConvNeXt V2 (Foto+CBCT) & lr cabeza & \{0.001, 0.0003\} & 0.001 \\ \cline{2-4}
- & lr backbone & lr cabeza / 10 & 0.0001 \\ \cline{2-4}
- & Épocas & $\leq 30$ & 7 \\ \hline
-ConvNeXt V2 (CBCT) & lr cabeza & \{0.001, 0.0003\} & 0.001 \\ \cline{2-4}
- & lr backbone & lr cabeza / 10 & 0.0001 \\ \cline{2-4}
- & Épocas & $\leq 30$ & 16 \\ \hline
-Común a las dos redes & Optimizador & -- & AdamW \\ \cline{2-4}
- & Decaimiento de pesos & -- & 0.05 \\ \cline{2-4}
- & Calendario & -- & OneCycle \\ \cline{2-4}
- & Tamaño de lote & -- & 32 \\ \cline{2-4}
- & Suavizado de etiquetas & -- & 0.1 \\ \cline{2-4}
- & Semillas en la prueba & -- & 3 \\ \hline
-\textbf{Ambas} & Componentes & -- & las dos redes \\
+Foto+CBCT & SVM & $10^{-3}$ / $10^{-4}$ & 7 & RBF; $C = 3$; $\gamma = 0.003$ & 1/2 \\ \cline{2-6}
+          & RF  & $10^{-3}$ / $10^{-4}$ & 7 & 500 árboles; máx.\ rasgos 0.2; hoja mín.\ 1 & 1/2 \\ \cline{2-6}
+          & HGB & $10^{-3}$ / $10^{-4}$ & 7 & tasa 0.1; máx.\ hojas 7; L2 1.0 & 1/2 \\ \cline{2-6}
+          & KNN & $10^{-3}$ / $10^{-4}$ & 7 & $k = 31$; ponderación por distancia & 1/2 \\
 \midrule
-\multicolumn{4}{l}{\textit{Machine Learning}} \\ \hline
-SVM & Kernel & -- & RBF \\ \cline{2-4}
- & $C$ & \{0.3, 1, 3, 10\} & 3 \\ \cline{2-4}
- & $\gamma$ & \{scale, 0.003, 0.01\} & 0.003 \\ \hline
-\textbf{Random Forest} & Árboles & -- & 500 \\ \cline{2-4}
- & max\_features & \{$\sqrt{p}$, 0.2\} & 0.2 \\ \cline{2-4}
- & min\_samples\_leaf & \{1, 3, 8\} & 1 \\ \hline
-HGB & learning\_rate & \{0.03, 0.1\} & 0.1 \\ \cline{2-4}
- & max\_leaf\_nodes & \{7, 15\} & 7 \\ \cline{2-4}
- & Regularización L2 & \{0, 1\} & 1.0 \\ \hline
-KNN & $k$ & \{7, 15, 31\} & 31 \\ \cline{2-4}
- & Ponderación & -- & distancia \\
+CBCT      & SVM & $10^{-3}$ / $10^{-4}$ & 16 & RBF; $C = 3$; $\gamma = 0.003$ & 1/2 \\ \cline{2-6}
+          & RF  & $10^{-3}$ / $10^{-4}$ & 16 & 500 árboles; máx.\ rasgos 0.2; hoja mín.\ 1 & 1/2 \\ \cline{2-6}
+          & HGB & $10^{-3}$ / $10^{-4}$ & 16 & tasa 0.1; máx.\ hojas 7; L2 1.0 & 1/2 \\ \cline{2-6}
+          & KNN & $10^{-3}$ / $10^{-4}$ & 16 & $k = 31$; ponderación por distancia & 1/2 \\
 \midrule
-\multicolumn{4}{l}{\textit{Ensamble}} \\ \hline
-DL + ML & Combinación & -- & promedio, igual peso \\
+Ambas     & SVM & $10^{-3}$ / $10^{-4}$ & 7 / 16 & RBF; $C = 3$; $\gamma = 0.003$ & 1/3 \\ \cline{2-6}
+(Foto+CBCT & \textbf{RF} & $\mathbf{10^{-3}}$ / $\mathbf{10^{-4}}$ & \textbf{7 / 16} & \textbf{500 árboles; máx.\ rasgos 0.2; hoja mín.\ 1} & \textbf{1/3} \\ \cline{2-6}
+y CBCT)   & HGB & $10^{-3}$ / $10^{-4}$ & 7 / 16 & tasa 0.1; máx.\ hojas 7; L2 1.0 & 1/3 \\ \cline{2-6}
+          & KNN & $10^{-3}$ / $10^{-4}$ & 7 / 16 & $k = 31$; ponderación por distancia & 1/3 \\
 \bottomrule
 \end{tabular}
 \par\smallskip
-\parbox{\textwidth}{\scriptsize lr: tasa de aprendizaje. $p$: número de
-rasgos. Épocas: parada temprana con paciencia de 7. HGB: \textit{HistGradientBoosting}. En negrita, los componentes
-del ensamble elegido (Ambas + Random Forest), que pesan 1/3 cada uno.}
+\parbox{\textwidth}{\scriptsize lr: tasa de aprendizaje de la cabeza /
+del \textit{backbone}. Épocas: con parada temprana (paciencia de 7); en
+Ambas, Foto+CBCT / CBCT. Peso: el de cada modelo en el promedio
+(Ec.~\ref{eq:ensamble}). Comunes a las redes: AdamW con decaimiento de
+pesos de 0.05, OneCycle, lote de 32, suavizado de etiquetas de 0.1 y 3
+semillas en la prueba. Espacio de búsqueda: lr de la cabeza \{0.001,
+0.0003\} (\textit{backbone}: lr / 10); épocas $\leq 30$; SVM: $C$ \{0.3,
+1, 3, 10\}, $\gamma$ \{scale, 0.003, 0.01\}; RF: max\_features
+\{$\sqrt{p}$, 0.2\}, min\_samples\_leaf \{1, 3, 8\}; HGB: learning\_rate
+\{0.03, 0.1\}, max\_leaf\_nodes \{7, 15\}, L2 \{0, 1\}; KNN: $k$ \{7, 15,
+31\}; $p$: número de rasgos. Máx.\ rasgos: max\_features; hoja mín.: min\_samples\_leaf; tasa: learning\_rate; máx.\ hojas: max\_leaf\_nodes. En negrita, el ensamble elegido.}
 \end{table}
 
 La Tabla~\ref{tab:hiperparametros} reúne los hiperparámetros de cada
-componente. Como el ensamble combina decisiones, cada red y cada
+ensamble. Como el ensamble combina decisiones, cada red y cada
 clasificador se entrenó una sola vez y se reutilizó en todas las
-combinaciones.
+combinaciones; por eso sus valores se repiten en los ensambles que lo
+incluyen.
 
 \subsection{Aporte de cada componente}
 La Fig.~\ref{fig:componentes} compara el ensamble elegido con sus
