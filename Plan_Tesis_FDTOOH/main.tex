@@ -350,6 +350,9 @@ repetirse en otros problemas de imagen dental.
 El estudio se realiza en la Universidad ESAN, en Lima. Las imágenes, sin
 embargo, vienen de Hong Kong: \dat{FDTooth} se recolectó en dos centros de
 la Facultad de Odontología de esa universidad \parencite{liu2025fdtooth}.
+La prueba retenida proviene de la misma institución que el desarrollo,
+por lo que el estudio no incluye una validación externa con datos de
+otros centros, tomógrafos o poblaciones.
 
 \subsubsection{Temporal}
 El trabajo se ejecuta en el semestre 2026-2, de agosto a diciembre de
@@ -772,7 +775,7 @@ qué aspectos se observan y con qué indicador se miden.
 Variable & Dimensión & Indicador & Medición \\
 \midrule
 \multirow{3}{2.8cm}{VI: Sistema de visión computacional}
- & Componente de Deep Learning & ConvNeXt V2 Tiny con Foto+CBCT, con CBCT o el promedio de ambas & Nominal \\
+ & Componente de Deep Learning & ConvNeXt V2 Tiny con Foto+CBCT, con CBCT o Ambas (las dos redes) & Nominal \\
  & Componente de Machine Learning & SVM, Random Forest, HistGradientBoosting o KNN con rasgos de la CBCT & Nominal \\
  & Modalidad de entrada & Fotografía, CBCT o fusión & Nominal \\
 \midrule
@@ -878,14 +881,17 @@ desarrollo y 43 (516 dientes) para la prueba final. Con esta fase se
 cumple el OE2.
 
 \paragraph{Fase 3: Ensambles híbridos}
-Cada ensamble junta, a nivel de decisión, un modelo de \sol{Deep
-Learning} y uno de \sol{Machine Learning}: los dos clasifican el diente
-por separado y se promedian sus probabilidades de N, F y D. En la rama de
+Cada ensamble junta, a nivel de decisión, una configuración de \sol{Deep
+Learning} y un clasificador de \sol{Machine Learning}: cada modelo
+clasifica el diente por separado y se promedian, con el mismo peso, sus
+probabilidades de N, F y D. En la rama de
 \sol{Deep Learning} se realiza el ajuste fino de \sol{ConvNeXt V2 Tiny}
 \parencite{woo2023convnextv2}, preentrenada en ImageNet-22k, en dos
 configuraciones: con una representación 2.5D de la CBCT y con la fusión
 de esta y de la fotografía en una arquitectura de dos ramas. Una tercera
-configuración promedia las dos redes. El entrenamiento usa una pérdida
+configuración, «Ambas», no entrena una red nueva: incluye en el ensamble
+las dos redes anteriores (Foto+CBCT y CBCT), de modo que, junto con el
+clasificador, cada uno de los tres modelos pesa 1/3. El entrenamiento usa una pérdida
 ponderada por clase, aumento de datos y aumento en inferencia (TTA), con
 la tasa de aprendizaje y el número de épocas elegidos en desarrollo, y en
 la prueba se promedian las probabilidades de tres semillas. Como

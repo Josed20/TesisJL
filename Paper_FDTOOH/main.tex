@@ -95,8 +95,9 @@ sola vez en una prueba retenida de 43 pacientes, donde obtuvo un
 \textit{Macro-F1} de 0.842 (IC 95\,\%: 0.783--0.891), un AUC de 0.940 y
 una sensibilidad de 0.979 para detectar dientes con algún defecto, frente
 a 0.551 con solo la fotografía. La \dat{CBCT} resultó indispensable, y el
-ensamble superó a sus componentes de \sol{Machine Learning} y, por un
-margen menor, a los de \sol{Deep Learning}.
+ensamble superó a su componente de \sol{Machine Learning} (0.786) y, sin
+diferencia significativa en la prueba, a su mejor componente de \sol{Deep
+Learning} (0.836).
 \keywords{\prob{Fenestración} \and \prob{Dehiscencia} \and \dat{CBCT} \and
 \dat{Fotografía intraoral} \and \sol{Visión computacional} \and
 \sol{Deep Learning} \and \sol{Machine Learning}}
@@ -777,8 +778,11 @@ parte de los errores de la red. \con{Por otra parte}, la sensibilidad del
 ensamble (0.979) lo hace útil para el cribado, pues casi no omite dientes
 con defectos. La prueba superó ligeramente al desarrollo, con
 intervalos solapados, de modo que no hay indicios de sobreajuste en la
-selección del ensamble. Las limitaciones incluyen el uso de datos de una
-sola institución, el tamaño de la prueba (43 pacientes), que produce
+selección del ensamble. Las limitaciones incluyen la ausencia de una
+validación externa, pues la prueba retenida proviene de la misma
+institución que el desarrollo y la generalización a otros centros,
+tomógrafos y poblaciones queda por demostrar; el tamaño de la prueba
+(43 pacientes), que produce
 intervalos amplios, y que la ventaja del ensamble sobre su mejor
 componente no fue significativa en la prueba.
 
